@@ -9,3 +9,6 @@ _archivo/
 
 .vercel/
 webpay-server/node_modules/
+
+.habitapp-backups/
+firebase.json.bak

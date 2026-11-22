@@ -1,0 +1,160 @@
+<ion-content class="ion-padding" [fullscreen]="true">
+
+  <button class="back-button" type="button" (click)="goBack()">‹ Volver</button>
+
+  <header class="page-header">
+    <span class="eyebrow">Finanzas</span>
+    <h1>Gastos comunes</h1>
+    <p>Revisa y gestiona tus pagos.</p>
+    <p class="demo-aviso">Modo demostración: las operaciones de prueba no liquidan deudas reales.</p>
+  </header>
+
+  <!-- Tarjeta principal -->
+  <div *ngIf="pendiente" class="total-payment-card">
+    <span>Pendiente</span>
+    <strong>${{ formatMonto(pendiente.total) }}</strong>
+    <small>Correspondiente a {{ pendiente.mes }} · Vence el {{ pendiente.vencimiento }}</small>
+    <button class="primary-button" type="button" (click)="abrirModalPago()">Demostrar pago</button>
+    <p *ngIf="solicitudActual?.estado === 'en_revision'">Transferencia en revisión. El saldo sigue pendiente hasta la conciliación.</p>
+    <p *ngIf="solicitudActual?.estado === 'en_webpay'">Orden Webpay pendiente de confirmación.</p>
+  </div>
+
+  <div *ngIf="!pendiente" class="empty-state-hb">
+    <span class="empty-icon">✅</span>
+    <p>Estás al día. No tienes pagos pendientes este mes.</p>
+  </div>
+
+  <!-- Desglose -->
+  <section class="inner-section" *ngIf="pendiente">
+    <span class="section-label">Detalle</span>
+    <div class="detail-list">
+      <div class="detail-row" *ngFor="let item of pendiente.desglose">
+        <span>{{ item.concepto }}</span>
+        <strong>${{ formatMonto(item.monto) }}</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- Historial -->
+  <section class="inner-section">
+    <span class="section-label">Historial</span>
+
+    <div *ngIf="historial.length === 0" class="empty-state-hb">
+      <p>Aún no registras pagos.</p>
+    </div>
+
+    <div class="detail-list" *ngIf="historial.length > 0">
+      <div class="detail-row" *ngFor="let pago of historial">
+        <span>{{ pago.mes }} · {{ pago.metodo }} · {{ pago.comprobante }}</span>
+        <strong>${{ formatMonto(pago.monto) }}</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="inner-section demo-panel" aria-label="Historial de demostración">
+    <h2>Operaciones de demostración</h2>
+    <p>Resultados compartidos con administración. No forman parte de la recaudación.</p>
+    <p role="status" *ngIf="mensaje && !modalAbierto">{{ mensaje }}</p>
+    <p *ngIf="!demostraciones.length">Aún no hay operaciones de prueba.</p>
+    <div class="detail-row" *ngFor="let d of demostraciones">
+      <span>{{ d.tipo === 'multa' ? 'Multa' : d.mes }} · {{ d.metodo }}<br><small>{{ d.comprobante }}</small></span>
+      <strong>${{ formatMonto(d.monto) }} · {{ d.estado === 'en_revision' ? 'En revisión' : d.estado }}</strong>
+    </div>
+  </section>
+
+  <!-- MODAL DE PAGO -->
+  <div class="hb-modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <div class="hb-modal-sheet pago-sheet" role="dialog" aria-modal="true"
+      aria-labelledby="pago-titulo" (click)="$event.stopPropagation()"
+      (keydown.escape)="cerrarModal()">
+      <header class="pago-header">
+        <div>
+          <h2 id="pago-titulo">{{ transferenciaEnviada ? 'Solicitud demo registrada' : 'Demostrar pago de gastos comunes' }}</h2>
+          <p>{{ pagoEnProceso?.mes }}</p>
+        </div>
+        <button class="hb-modal-close" type="button" aria-label="Cerrar pago"
+          (click)="cerrarModal()" [disabled]="procesando">×</button>
+      </header>
+      <div class="pago-body">
+      <p role="status" *ngIf="mensaje">{{ mensaje }}</p>
+      <ng-container *ngIf="!procesando && !transferenciaEnviada">
+        <div class="amount-box">
+          <span>Total a pagar</span>
+          <strong>${{ formatMonto(pagoEnProceso?.total || 0) }}</strong>
+        </div>
+
+        <span class="method-label">Método de pago</span>
+        <div class="payment-methods">
+          <button
+            type="button"
+            class="method-card"
+            [class.selected]="metodoSeleccionado === 'Webpay'"
+            [attr.aria-pressed]="metodoSeleccionado === 'Webpay'"
+            (click)="seleccionarMetodo('Webpay')"
+          >
+            <span class="method-icon">💳</span>
+            <span>Simulador de pago</span>
+          </button>
+          <button
+            type="button"
+            class="method-card"
+            [class.selected]="metodoSeleccionado === 'Transferencia'"
+            [attr.aria-pressed]="metodoSeleccionado === 'Transferencia'"
+            (click)="seleccionarMetodo('Transferencia')"
+          >
+            <span class="method-icon">🏦</span>
+            <span>Transferencia demo</span>
+          </button>
+        </div>
+
+        <section class="datos-transferencia" *ngIf="metodoSeleccionado === 'Transferencia'">
+          <p class="demo-aviso">Solo demostración. No transfieras dinero a esta cuenta.</p>
+          <ng-container *ngIf="banco as cuenta; else sinCuenta">
+            <header class="transferencia-header">
+              <h3>Cuenta configurada por administración</h3>
+              <button class="copiar-banco" type="button" (click)="copiarBanco(cuenta)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="1.8" aria-hidden="true">
+                  <rect x="8" y="8" width="12" height="12" rx="2"></rect>
+                  <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path>
+                </svg>
+                Copiar datos
+              </button>
+            </header>
+            <dl>
+              <dt>Titular</dt><dd>{{ cuenta.titular }}</dd>
+              <dt>RUT</dt><dd>{{ cuenta.rut }}</dd>
+              <dt>Banco</dt><dd>{{ cuenta.banco }}</dd>
+              <dt>Tipo de cuenta</dt><dd>{{ cuenta.tipo }}</dd>
+              <dt>Número</dt><dd>{{ cuenta.cuenta }}</dd>
+              <dt>Correo</dt><dd>{{ cuenta.correo }}</dd>
+            </dl>
+            <label for="referencia-banco">Referencia ficticia de la demostración</label>
+            <input id="referencia-banco" #refBanco [value]="referencia"
+              (input)="referencia = refBanco.value" maxlength="80" placeholder="Ej. 12345678" autocomplete="off">
+          </ng-container>
+          <ng-template #sinCuenta><p>Administración aún no ha configurado una cuenta.</p></ng-template>
+        </section>
+        <p class="webpay-aviso" *ngIf="metodoSeleccionado === 'Webpay'">Simulación académica de HabitApp. No se conecta a Transbank ni solicita datos de tarjeta.</p>
+      </ng-container>
+
+      <!-- Estado: procesando -->
+      <div class="processing-state" *ngIf="procesando">
+        <div class="spinner"></div>
+        <p>Procesando pago con {{ metodoSeleccionado }}...</p>
+      </div>
+
+      <p class="webpay-aviso" *ngIf="transferenciaEnviada && !procesando">
+        Administración puede aprobar o rechazar esta solicitud en Operaciones de demostración. No realices una transferencia real.
+      </p>
+      </div>
+      <footer class="pago-footer" *ngIf="!procesando">
+        <button class="primary-button" type="button" *ngIf="!transferenciaEnviada"
+          [disabled]="!metodoSeleccionado || (metodoSeleccionado === 'Transferencia' && (!banco || referencia.trim().length < 4))"
+          (click)="confirmarPago()">{{ metodoSeleccionado === 'Webpay' ? 'Abrir simulador' : 'Informar transferencia demo' }}</button>
+        <button class="primary-button" type="button" *ngIf="transferenciaEnviada"
+          (click)="cerrarModal()">Entendido</button>
+      </footer>
+    </div>
+  </div>
+</ion-content>

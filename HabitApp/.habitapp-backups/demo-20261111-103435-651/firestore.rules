@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function perfil() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+    function esAdmin() {
+      return signedIn() && perfil().rol == 'admin';
+    }
+    // Verificado = estado activo (o admin). Cuentas antiguas sin estado cuentan como activas.
+    function activo() {
+      return signedIn() && (perfil().rol == 'admin' || perfil().get('estado', 'activo') == 'activo');
+    }
+
+    match /meta/contadores {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.usuarios == 1;
+      allow update: if signedIn()
+        && request.resource.data.usuarios == resource.data.usuarios + 1;
+    }
+
+    match /condominios/{id} {
+      allow read: if signedIn();
+      allow write: if esAdmin();
+    }
+
+    match /config/{id} {
+      allow read: if signedIn();
+      allow write: if esAdmin();
+    }
+
+    // Egresos del condominio: solo la administracion
+    match /egresos/{id} {
+      allow read, write: if esAdmin();
+    }
+
+    match /usuarios/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || esAdmin());
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.rol == 'residente'
+        && request.resource.data.estado == 'pendiente';
+      allow update: if signedIn() && (
+        (request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['telefono']))
+        || esAdmin()
+      );
+    }
+
+    match /reservas/{id} {
+      allow read: if activo();
+      allow create: if activo() && request.resource.data.uid == request.auth.uid;
+      allow update: if activo() && (resource.data.uid == request.auth.uid || esAdmin());
+    }
+
+    match /posts/{id} {
+      allow read: if activo();
+      allow create: if activo()
+        && request.resource.data.authorUid == request.auth.uid
+        && (request.resource.data.category == 'comunidad' || esAdmin());
+      allow update: if activo() && (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likedBy', 'commentsCount'])
+        || resource.data.authorUid == request.auth.uid
+        || esAdmin()
+      );
+      allow delete: if activo() && (resource.data.authorUid == request.auth.uid || esAdmin());
+
+      match /comments/{cid} {
+        allow read, create: if activo();
+      }
+    }
+
+    match /pagos/{id} {
+      allow read: if activo() && (resource.data.uid == request.auth.uid || esAdmin());
+      allow write: if false;
+    }
+
+    match /solicitudesPago/{id} {
+      allow read: if activo() && (resource.data.uid == request.auth.uid || esAdmin());
+      allow write: if false;
+    }
+
+    match /multas/{id} {
+      allow read: if activo() && (resource.data.uid == request.auth.uid || esAdmin());
+      allow create: if esAdmin();
+      allow delete: if esAdmin();
+      allow update: if activo() && (
+        esAdmin()
+        || (resource.data.uid == request.auth.uid
+            && resource.data.estado == 'pendiente'
+            && request.resource.data.estado == 'pagada'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado', 'fechaPago', 'comprobante']))
+      );
+    }
+  }
+}

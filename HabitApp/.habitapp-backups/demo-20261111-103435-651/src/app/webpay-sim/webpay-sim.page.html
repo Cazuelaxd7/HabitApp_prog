@@ -1,0 +1,104 @@
+<ion-content [fullscreen]="true" class="wp-content">
+  <div class="wp-wrap">
+
+    <div class="wp-banner no-print">Ambiente de demostración · no se realiza ningún cobro real</div>
+
+    @if (estado === 'cargando') {
+      <div class="wp-card"><p class="wp-centro">Cargando...</p></div>
+    }
+
+    @if (estado === 'form' || estado === 'procesando') {
+      <div class="wp-card">
+        <div class="wp-logo">
+          <span class="wp-tb">transbank</span>
+          <span class="wp-wp">Webpay <b>Plus</b></span>
+        </div>
+
+        <div class="wp-resumen">
+          <div><span>Comercio</span><strong>HabitApp · Condominio</strong></div>
+          <div><span>Concepto</span><strong>{{ concepto }}</strong></div>
+          <div class="wp-total"><span>Total a pagar</span><strong>&#36;{{ fmt(monto) }}</strong></div>
+        </div>
+
+        <div class="wp-form">
+          <label>Número de tarjeta</label>
+          <input type="text" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19"
+                 [(ngModel)]="tarjeta" (input)="onTarjeta()" [disabled]="estado === 'procesando'">
+
+          <div class="wp-fila">
+            <div>
+              <label>Vencimiento</label>
+              <input type="text" inputmode="numeric" placeholder="MM/AA" maxlength="5"
+                     [(ngModel)]="vence" (input)="onVence()" [disabled]="estado === 'procesando'">
+            </div>
+            <div>
+              <label>CVV</label>
+              <input type="password" inputmode="numeric" placeholder="123" maxlength="3"
+                     [(ngModel)]="cvv" [disabled]="estado === 'procesando'">
+            </div>
+          </div>
+
+          <label>Nombre del titular</label>
+          <input type="text" placeholder="Como aparece en la tarjeta" [(ngModel)]="nombre" [disabled]="estado === 'procesando'">
+
+          @if (error) { <p class="wp-error">{{ error }}</p> }
+
+          <button class="wp-pagar" type="button" (click)="pagar()" [disabled]="estado === 'procesando'">
+            @if (estado === 'procesando') { <span class="wp-spin"></span> Procesando pago... }
+            @else { Pagar &#36;{{ fmt(monto) }} }
+          </button>
+          <button class="wp-link" type="button" (click)="usarTarjetaPrueba()" [disabled]="estado === 'procesando'">Usar tarjeta de prueba</button>
+          <button class="wp-link gris" type="button" (click)="cancelar()" [disabled]="estado === 'procesando'">Anular y volver al comercio</button>
+        </div>
+
+        <p class="wp-nota">Tarjeta que empieza con 5186 simula un pago rechazado.</p>
+      </div>
+    }
+
+    @if (estado === 'ok') {
+      <div class="wp-card voucher">
+        <div class="wp-ok">✓</div>
+        <h1>Pago aprobado</h1>
+        <p class="wp-centro gris">Transacción autorizada por Webpay Plus</p>
+
+        <div class="wp-lineas">
+          <div><span>N° comprobante</span><strong>{{ comprobante }}</strong></div>
+          <div><span>Orden de compra</span><strong>{{ orden }}</strong></div>
+          <div><span>Comercio</span><strong>HabitApp · Condominio</strong></div>
+          <div><span>Concepto</span><strong>{{ concepto }}</strong></div>
+          @if (mes) { <div><span>Período</span><strong>{{ mes }}</strong></div> }
+          <div><span>Tipo de pago</span><strong>Crédito / Débito Webpay</strong></div>
+          <div><span>Tarjeta</span><strong>**** **** **** {{ ultimos4 }}</strong></div>
+          <div><span>Cód. autorización</span><strong>{{ autorizacion }}</strong></div>
+          <div><span>Fecha y hora</span><strong>{{ fechaHora }}</strong></div>
+          <div class="wp-total"><span>Monto pagado</span><strong>&#36;{{ fmt(monto) }}</strong></div>
+        </div>
+
+        <p class="wp-nota">Este pago ya está registrado y visible para la administración.</p>
+
+        <button class="wp-pagar no-print" type="button" (click)="imprimir()">Imprimir / guardar PDF</button>
+        <button class="wp-link no-print" type="button" (click)="volver()">Volver a HabitApp</button>
+      </div>
+    }
+
+    @if (estado === 'rechazado') {
+      <div class="wp-card">
+        <div class="wp-mal">✕</div>
+        <h1>Pago rechazado</h1>
+        <p class="wp-centro gris">La tarjeta fue rechazada por el emisor. No se realizó ningún cobro.</p>
+        <button class="wp-pagar" type="button" (click)="reintentar()">Intentar con otra tarjeta</button>
+        <button class="wp-link gris" type="button" (click)="cancelar()">Volver al comercio</button>
+      </div>
+    }
+
+    @if (estado === 'error') {
+      <div class="wp-card">
+        <div class="wp-mal">!</div>
+        <h1>No se pudo completar</h1>
+        <p class="wp-centro gris">Ocurrió un problema al registrar el pago. Intenta nuevamente.</p>
+        <button class="wp-pagar" type="button" (click)="cancelar()">Volver</button>
+      </div>
+    }
+
+  </div>
+</ion-content>

@@ -1,0 +1,132 @@
+﻿<ion-content class="ion-padding" [fullscreen]="true">
+  <header class="page-header">
+    <span class="eyebrow">Mi cuenta</span>
+    <h1>Perfil</h1>
+  </header>
+
+  <div class="card profile-card">
+    <div class="avatar">{{ iniciales }}</div>
+    <div class="profile-info">
+      <h2>{{ nombreMostrado }}</h2>
+      <span>{{ rolTexto }} &middot; {{ perfil?.codigo || 'Sin c&oacute;digo' }}</span>
+    </div>
+    @if (!editando && perfil) {
+      <button type="button" class="edit-btn" (click)="editar()">Editar</button>
+    }
+  </div>
+
+  @if (cargando) {
+    <p class="notice">Cargando perfil...</p>
+  } @else if (!perfil) {
+
+    <p class="notice">Completa tus datos de residente para activar tu cuenta.</p>
+
+    <div class="card list-card">
+      <div class="row">
+        <span class="row-label">RUT</span>
+        <input class="field" [(ngModel)]="form.rut" placeholder="12.345.678-5" />
+      </div>
+      <div class="row">
+        <span class="row-label">Condominio</span>
+        <select class="field" [(ngModel)]="form.condominioId">
+          @for (c of condominios; track c.id) {
+            <option [value]="c.id">{{ c.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="row">
+        <span class="row-label">Torre</span>
+        <input class="field" [(ngModel)]="form.torre" placeholder="Ej: B" />
+      </div>
+      <div class="row">
+        <span class="row-label">Depto</span>
+        <input class="field" [(ngModel)]="form.depto" placeholder="Ej: 704" />
+      </div>
+      <div class="row">
+        <span class="row-label">Tel&eacute;fono</span>
+        <input class="field" [(ngModel)]="form.telefono" placeholder="+56 9 ..." inputmode="tel" />
+      </div>
+    </div>
+
+    @if (error) {
+      <p class="error-text">{{ error }}</p>
+    }
+
+    <div class="edit-actions">
+      <button type="button" class="btn-primary" (click)="completar()" [disabled]="creando">
+        {{ creando ? 'Guardando...' : 'Guardar datos' }}
+      </button>
+    </div>
+
+  } @else {
+
+    @if (perfil.estado === 'pendiente') {
+      <p class="notice">Tu cuenta est&aacute; pendiente de aprobaci&oacute;n por la administraci&oacute;n.</p>
+    }
+
+    <span class="section-label">Datos fijos</span>
+    <div class="card list-card">
+      <div class="row">
+        <span class="row-label">C&oacute;digo</span>
+        <strong>{{ perfil.codigo }}</strong>
+      </div>
+      <div class="row">
+        <span class="row-label">Nombre</span>
+        <strong>{{ nombreMostrado }}</strong>
+      </div>
+      <div class="row">
+        <span class="row-label">RUT</span>
+        <strong>{{ rutFormateado }}</strong>
+      </div>
+      <div class="row">
+        <span class="row-label">Correo</span>
+        <strong>{{ correo }}</strong>
+      </div>
+      <div class="row">
+        <span class="row-label">Condominio</span>
+        <strong>{{ perfil.condominioNombre || '-' }}</strong>
+      </div>
+      <div class="row">
+        <span class="row-label">Torre</span>
+        <strong>{{ perfil.torre || '-' }}</strong>
+      </div>
+      <div class="row">
+        <span class="row-label">Depto</span>
+        <strong>{{ perfil.depto || '-' }}</strong>
+      </div>
+    </div>
+
+    <span class="section-label">Contacto</span>
+    <div class="card list-card">
+      <div class="row">
+        <span class="row-label">Tel&eacute;fono</span>
+        @if (editando) {
+          <input class="field" [(ngModel)]="telefono" placeholder="+56 9 ..." inputmode="tel" />
+        } @else {
+          <strong>{{ perfil.telefono || '-' }}</strong>
+        }
+      </div>
+    </div>
+
+    @if (editando) {
+      <div class="edit-actions">
+        <button type="button" class="btn-secondary" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
+        <button type="button" class="btn-primary" (click)="guardar()" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    }
+  }
+
+  @if (error && perfil === null && !cargando && !creando && false) {
+    <p class="error-text">{{ error }}</p>
+  }
+
+  <span class="section-label">Sesi&oacute;n</span>
+  <div class="card list-card">
+    <button type="button" class="row row-button danger" (click)="cerrarSesion()">
+      <span>Cerrar sesi&oacute;n</span>
+      <span class="chevron">&#8250;</span>
+    </button>
+  </div>
+</ion-content>

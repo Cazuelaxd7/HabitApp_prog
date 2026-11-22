@@ -1,0 +1,11 @@
+﻿node_modules/
+www/
+.angular/
+.firebase/
+_archivo/
+*.log
+.DS_Store
+.env
+
+.vercel/
+webpay-server/node_modules/

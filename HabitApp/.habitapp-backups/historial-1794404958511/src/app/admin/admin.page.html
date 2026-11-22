@@ -1,0 +1,825 @@
+<ion-content>
+  <div class="admin-layout app-shell">
+
+    <div class="backdrop" [class.show]="menuAbierto()" (click)="menuAbierto.set(false)"></div>
+
+    <aside class="sidebar" [class.mobile-open]="menuAbierto()">
+      <div class="brand">
+        <div class="brand-logo">H</div>
+        <div><strong>HabitApp</strong><span>Administración</span></div>
+      </div>
+
+      <nav class="main-menu">
+        @for (s of secciones; track s.id) {
+          @if (s.id !== 'configuracion') {
+            <button class="menu-item" [class.active]="seccion() === s.id" (click)="ir(s.id)">
+              <span class="menu-icon">{{ s.icono }}</span><span>{{ s.label }}</span>
+            </button>
+          }
+        }
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button class="menu-item" [class.active]="seccion() === 'configuracion'" (click)="ir('configuracion')">
+          <span class="menu-icon">⚙</span><span>Configuración</span>
+        </button>
+        <button class="menu-item logout-button" (click)="cerrarSesion()">
+          <span class="menu-icon">↪</span><span>Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+
+      <header class="topbar">
+        <div class="mobile-menu-button" (click)="menuAbierto.set(!menuAbierto())">☰</div>
+        <div class="topbar-search">
+          <span>⌕</span>
+          <input type="text" placeholder="Buscar en HabitApp...">
+        </div>
+        <div class="topbar-actions">
+
+          <div class="notif-wrap">
+            <button class="notif-btn" type="button" (click)="panelNotif.set(!panelNotif())" aria-label="Notificaciones">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>
+              </svg>
+              @if (pendientesRegistro().length > 0) {
+                <span class="notif-badge">{{ pendientesRegistro().length }}</span>
+              }
+            </button>
+
+            @if (panelNotif()) {
+              <div class="notif-panel">
+                <div class="notif-head">
+                  <strong>Notificaciones</strong>
+                  <button class="text-button" type="button" (click)="panelNotif.set(false)">Cerrar</button>
+                </div>
+                @for (u of pendientesRegistro(); track u.uid) {
+                  <div class="notif-item">
+                    <div class="table-avatar">{{ iniciales(u.nombre) }}</div>
+                    <div class="notif-texto">
+                      <strong>{{ u.nombre || 'Sin nombre' }}</strong>
+                      <span>Nuevo registro · {{ u.correo }}</span>
+                    </div>
+                    <button class="table-action" type="button" (click)="activarUsuario(u.uid)">Verificar</button>
+                  </div>
+                } @empty {
+                  <div class="table-empty-state">No hay registros por verificar.</div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="admin-profile">
+            <div class="admin-avatar">{{ iniciales(nombreAdmin()) }}</div>
+            <div class="admin-profile-info">
+              <strong>{{ nombreAdmin() }}</strong>
+              <span>Condominio HabitApp</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      @switch (seccion()) {
+
+        <!-- ============ DASHBOARD ============ -->
+        @case ('dashboard') {
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">RESUMEN GENERAL</span>
+                <h1>Buenos días, Administrador 👋</h1>
+                <p>Aquí tienes un resumen de la actividad del condominio.</p>
+              </div>
+            </div>
+
+            @if (pendientesRegistro().length > 0) {
+              <div class="alerta-registro">
+                <div>
+                  <strong>{{ pendientesRegistro().length }} {{ pendientesRegistro().length === 1 ? 'registro espera' : 'registros esperan' }} verificación</strong>
+                  <span>Hasta que los verifiques, no podrán usar la aplicación.</span>
+                </div>
+                <button class="primary-button" type="button" (click)="ir('residentes')">Revisar</button>
+              </div>
+            }
+
+            <div class="stats-grid">
+              <article class="stat-card">
+                <div class="stat-icon residents-icon">♙</div>
+                <div class="stat-content"><span>Residentes</span><strong>{{ residentes().length }}</strong><small>Registrados</small></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon payments-icon">$</div>
+                <div class="stat-content"><span>Recaudación</span><strong>{{ porcentaje() }}%</strong><small>{{ mes }}</small></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon fines-icon">!</div>
+                <div class="stat-content"><span>Pagos pendientes</span><strong>{{ pendientes() }}</strong><small>Por cobrar</small></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon reservations-icon">□</div>
+                <div class="stat-content"><span>Reservas hoy</span><strong>{{ reservasHoy().length }}</strong><small>Espacios comunes</small></div>
+              </article>
+            </div>
+
+            <!-- Ingresos y egresos -->
+            <article class="panel fin-panel">
+              <div class="panel-header">
+                <div><span class="eyebrow">FINANZAS</span><h2>Ingresos y egresos del condominio</h2></div>
+                <button class="text-button" (click)="ir('egresos')">Registrar egreso</button>
+              </div>
+
+              <div class="fin-resumen">
+                <div class="fin-card ing"><span>Ingresos del mes</span><strong>&#36;{{ fmtMonto(finMes().ingresos) }}</strong><small>Gastos comunes + multas pagadas</small></div>
+                <div class="fin-card egr"><span>Egresos del mes</span><strong>&#36;{{ fmtMonto(finMes().egresos) }}</strong><small>Gastos del condominio</small></div>
+                <div class="fin-card bal" [class.neg]="finMes().balance < 0"><span>Balance del mes</span><strong>{{ finMes().balance < 0 ? '-' : '' }}&#36;{{ fmtMonto(finMes().balance < 0 ? -finMes().balance : finMes().balance) }}</strong><small>Ingresos menos egresos</small></div>
+                <div class="fin-card caja" [class.neg]="saldoCaja() < 0"><span>Saldo acumulado</span><strong>{{ saldoCaja() < 0 ? '-' : '' }}&#36;{{ fmtMonto(saldoCaja() < 0 ? -saldoCaja() : saldoCaja()) }}</strong><small>Todo el historial</small></div>
+              </div>
+
+              <div class="fin-leyenda">
+                <span><i class="pt ing"></i>Ingresos</span>
+                <span><i class="pt egr"></i>Egresos</span>
+              </div>
+              <div class="fin-chart">
+                @for (f of serieFinanzas(); track f.clave) {
+                  <div class="fin-col">
+                    <div class="fin-bars">
+                      <span class="fin-bar ing" [style.height.%]="f.pi" [title]="'Ingresos $' + fmtMonto(f.ingresos)"></span>
+                      <span class="fin-bar egr" [style.height.%]="f.pe" [title]="'Egresos $' + fmtMonto(f.egresos)"></span>
+                    </div>
+                    <small>{{ f.etiqueta }}</small>
+                  </div>
+                }
+              </div>
+            </article>
+
+            <div class="dashboard-grid">
+              <article class="panel payments-panel">
+                <div class="panel-header">
+                  <div><span class="eyebrow">GASTOS COMUNES</span><h2>Estado de pagos</h2></div>
+                  <button class="text-button" (click)="ir('pagos')">Ver detalle</button>
+                </div>
+                <div class="payment-total">
+                  <span>Total recaudado (mes)</span>
+                  <strong>&#36;{{ fmtMonto(totalRecaudado()) }}</strong>
+                </div>
+                <div class="payment-progress">
+                  <div class="progress-header"><span>Recaudación mensual</span><strong>{{ porcentaje() }}%</strong></div>
+                  <div class="progress-bar"><div class="progress-fill" [style.width.%]="porcentaje() > 100 ? 100 : porcentaje()"></div></div>
+                  <div class="progress-footer">
+                    <span>Pagado: &#36;{{ fmtMonto(totalRecaudado()) }}</span>
+                    <span>Pendiente: &#36;{{ fmtMonto(montoPendiente()) }}</span>
+                  </div>
+                </div>
+                <div class="payment-mini-grid">
+                  <div><span>Pagados</span><strong>{{ pagadosResidentes() }}</strong></div>
+                  <div><span>Pendientes</span><strong>{{ pendientes() }}</strong></div>
+                  <div><span>Residentes</span><strong>{{ residentes().length }}</strong></div>
+                </div>
+              </article>
+
+              <article class="panel activity-panel">
+                <div class="panel-header">
+                  <div><span class="eyebrow">ACTIVIDAD</span><h2>Actividad reciente</h2></div>
+                </div>
+                <div class="activity-list">
+                  @for (a of actividad(); track $index) {
+                    <div class="activity-item">
+                      <div class="activity-avatar">{{ a.icono }}</div>
+                      <div class="activity-text"><strong>{{ a.titulo }}</strong><span>{{ a.texto }}</span></div>
+                      <small>{{ tiempoRelativo(a.ts) }}</small>
+                    </div>
+                  } @empty {
+                    <div class="table-empty-state">Sin actividad reciente.</div>
+                  }
+                </div>
+              </article>
+            </div>
+
+            <div class="dashboard-bottom-grid">
+              <article class="panel">
+                <div class="panel-header">
+                  <div><span class="eyebrow">RESERVAS</span><h2>Próximas reservas</h2></div>
+                  <button class="text-button" (click)="ir('reservas')">Ver todas</button>
+                </div>
+                <div class="reservation-list">
+                  @for (r of reservasProximas().slice(0, 4); track r.id) {
+                    <div class="admin-reservation">
+                      <div class="reservation-date"><strong>{{ diaMes(r.fecha).d }}</strong><span>{{ diaMes(r.fecha).m }}</span></div>
+                      <div class="reservation-info"><strong>{{ r.espacio }}</strong><span>{{ nombreDe(r.uid) }} · {{ r.horario }}</span></div>
+                      <span class="status-badge confirmed">Confirmada</span>
+                    </div>
+                  } @empty {
+                    <div class="table-empty-state">No hay reservas próximas.</div>
+                  }
+                </div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-header">
+                  <div><span class="eyebrow">COMUNIDAD</span><h2>Avisos importantes</h2></div>
+                  <button class="text-button" (click)="ir('avisos')">Gestionar</button>
+                </div>
+                <div class="notice-list">
+                  @for (p of avisos().slice(0, 3); track p.id) {
+                    <div class="notice-item">
+                      <div class="notice-icon">!</div>
+                      <div><strong>{{ p.title }}</strong><span>{{ (p.body || '').slice(0, 60) }}</span></div>
+                    </div>
+                  } @empty {
+                    <div class="table-empty-state">No hay avisos publicados.</div>
+                  }
+                </div>
+              </article>
+            </div>
+          </section>
+        }
+
+        <!-- ============ RESIDENTES ============ -->
+        @case ('residentes') {
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">GESTIÓN</span>
+                <h1>Residentes</h1>
+                <p>Verifica a los nuevos residentes y administra los permisos.</p>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="table-toolbar">
+                <div class="table-search">
+                  <span>⌕</span>
+                  <input type="text" placeholder="Buscar residente..." [value]="busqueda()" (input)="busqueda.set($any($event.target).value)">
+                </div>
+              </div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr><th>Residente</th><th>Depto</th><th>Verificación</th><th>Gastos comunes (mes)</th><th></th></tr>
+                  </thead>
+                  <tbody>
+                    @for (u of residentesFiltrados(); track u.uid) {
+                      <tr>
+                        <td>
+                          <div class="resident-cell">
+                            <div class="table-avatar">{{ iniciales(u.nombre) }}</div>
+                            <div><strong>{{ u.nombre || 'Sin nombre' }}</strong><span>{{ u.correo }}</span></div>
+                          </div>
+                        </td>
+                        <td>{{ u.torre ? 'Torre ' + u.torre + ' · ' : '' }}{{ u.depto || '—' }}</td>
+                        <td>
+                          @if (u.estado === 'pendiente') {
+                            <span class="status-badge pending">Pendiente</span>
+                          } @else {
+                            <span class="status-badge confirmed">Verificado</span>
+                          }
+                        </td>
+                        <td>
+                          @if (yaPago(u.uid)) { <span class="paid-text">Pagado</span> } @else { <span class="pending-text">Pendiente</span> }
+                        </td>
+                        <td>
+                          <div class="acciones-multa">
+                            @if (u.estado === 'pendiente') {
+                              <button class="table-action" (click)="activarUsuario(u.uid)">Verificar</button>
+                            }
+                            <button class="table-action" (click)="hacerAdmin(u.uid)">Hacer admin</button>
+                          </div>
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr><td colspan="5" class="table-empty-state">No hay residentes registrados aún.</td></tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ============ PAGOS ============ -->
+        @case ('pagos') {
+          <section class="panel habit-demo-admin">
+            <div class="panel-header"><div><span class="eyebrow">DEMOSTRACIÓN ACADÉMICA</span><h2>Operaciones de prueba</h2></div></div>
+            <p>Conectadas con el residente en tiempo real. No son cobros de Transbank ni ingresos del condominio.</p>
+            <p><strong>Total aprobado en demostración: ${{ fmtMonto(totalDemo()) }}</strong></p>
+            @if (errorDemo()) { <p role="alert">{{ errorDemo() }}</p> }
+            <div class="table-wrap"><table>
+              <thead><tr><th>Residente</th><th>Concepto / período</th><th>Monto</th><th>Método</th><th>Estado</th><th>Detalle</th><th>Acción demo</th></tr></thead>
+              <tbody>
+                @for (p of pagosDemo(); track p.id) {
+                  <tr><td>{{ nombreDe(p.uid) }}</td><td>{{ p.tipo === 'multa' ? 'Multa' : p.mes }}</td>
+                    <td>${{ fmtMonto(p.monto) }}</td><td>{{ p.metodo }}</td><td>{{ p.estado === 'en_revision' ? 'En revisión' : p.estado }}</td>
+                    <td><small>{{ p.comprobante }}</small>
+                      @if (p.referencia) { <p>Ref.: {{ p.referencia }}</p><p>{{ p.cuentaDestino.banco }} · {{ p.cuentaDestino.cuenta }}</p> }
+                    </td>
+                    <td>@if (p.estado === 'en_revision') {
+                      <button type="button" [disabled]="resolviendoDemo()" (click)="resolverDemo(p, true)">Aprobar demo</button>
+                      <button type="button" [disabled]="resolviendoDemo()" (click)="resolverDemo(p, false)">Rechazar demo</button>
+                    } @else { <span>Resuelta</span> }</td>
+                  </tr>
+                } @empty { <tr><td colspan="7">No hay operaciones de demostración.</td></tr> }
+              </tbody>
+            </table></div>
+          </section>
+          <section class="panel">
+            <h2>Transferencias por conciliar</h2>
+            @for (solicitud of transferencias(); track solicitud.id) {
+              <p>{{ nombreDe(solicitud.uid) }} · {{ solicitud.mes }} ·
+                ${{ fmtMonto(solicitud.monto) }} · Ref. {{ solicitud.referencia }}</p>
+              <p>Destino registrado: {{ solicitud.cuentaDestino?.banco }} · {{ solicitud.cuentaDestino?.cuenta }}</p>
+              <button class="table-action" type="button" [disabled]="conciliando()"
+                (click)="resolverTransferencia(solicitud, true)">Confirmar abono</button>
+              <button class="table-action" type="button" [disabled]="conciliando()"
+                (click)="resolverTransferencia(solicitud, false)">Rechazar</button>
+            } @empty {
+              <p>No hay transferencias por conciliar.</p>
+            }
+          </section>
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">FINANZAS</span>
+                <h1>Gastos comunes</h1>
+                <p>Controla los pagos y la recaudación del condominio.</p>
+              </div>
+            </div>
+            <div class="stats-grid">
+              <article class="stat-card">
+                <div class="stat-icon payments-icon">$</div>
+                <div class="stat-content"><span>Total pagado</span><strong>&#36;{{ fmtMonto(totalRecaudado()) }}</strong><small>{{ porcentaje() }}% recaudado</small></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon fines-icon">!</div>
+                <div class="stat-content"><span>Pendiente</span><strong>{{ pendientes() }}</strong><small>residentes</small></div>
+              </article>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div><span class="eyebrow">HISTORIAL</span><h2>Últimos pagos</h2></div></div>
+              <div class="table-wrapper">
+                <table>
+                  <thead><tr><th>Residente</th><th>Mes</th><th>Monto</th><th>Método</th><th>Comprobante</th><th>Autorización</th><th>Estado</th></tr></thead>
+                  <tbody>
+                    @for (p of historialPagos(); track p.id) {
+                      <tr>
+                        <td>{{ nombreDe(p.uid) }}</td>
+                        <td>{{ p.mes || '—' }}</td>
+                        <td>&#36;{{ fmtMonto(p.monto) }}</td>
+                        <td>{{ p.metodo || '—' }}</td><td><b>{{ p.comprobante || '—' }}</b></td><td>{{ p.autorizacion || '—' }}</td>
+                        <td><span class="status-badge confirmed">Pagado</span></td>
+                      </tr>
+                    } @empty {
+                      <tr><td colspan="7" class="table-empty-state">Aún no hay pagos registrados.</td></tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ============ EGRESOS ============ -->
+        @case ('egresos') {
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">FINANZAS</span>
+                <h1>Egresos</h1>
+                <p>Registra los gastos del condominio (mantención, sueldos, cuentas, etc.).</p>
+              </div>
+            </div>
+
+            <div class="stats-grid">
+              <article class="stat-card">
+                <div class="stat-icon fines-icon">↧</div>
+                <div class="stat-content"><span>Egresos del mes</span><strong>&#36;{{ fmtMonto(finMes().egresos) }}</strong><small>{{ mes }}</small></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon payments-icon">$</div>
+                <div class="stat-content"><span>Ingresos del mes</span><strong>&#36;{{ fmtMonto(finMes().ingresos) }}</strong><small>{{ mes }}</small></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon residents-icon">=</div>
+                <div class="stat-content"><span>Balance del mes</span><strong>{{ finMes().balance < 0 ? '-' : '' }}&#36;{{ fmtMonto(finMes().balance < 0 ? -finMes().balance : finMes().balance) }}</strong><small>Ingresos menos egresos</small></div>
+              </article>
+            </div>
+
+            <div class="dashboard-bottom-grid">
+              <article class="panel new-post-panel">
+                <div class="panel-header"><div><span class="eyebrow">NUEVO</span><h2>Registrar egreso</h2></div></div>
+
+                <input type="text" placeholder="Concepto (ej: Pago de electricidad áreas comunes)"
+                       [value]="eConcepto()" (input)="eConcepto.set($any($event.target).value)">
+
+                <select class="multa-select" (change)="eCategoria.set($any($event.target).value)">
+                  @for (c of categoriasEgreso; track c) {
+                    <option [value]="c" [selected]="eCategoria() === c">{{ c }}</option>
+                  }
+                </select>
+
+                <input type="number" min="1" placeholder="Monto en pesos"
+                       [value]="eMonto()" (input)="eMonto.set($any($event.target).value)">
+                <input type="date" [value]="eFecha()" (input)="eFecha.set($any($event.target).value)">
+
+                <button class="primary-button" (click)="crearEgreso()">Registrar egreso</button>
+              </article>
+
+              <article class="panel">
+                <div class="panel-header"><div><span class="eyebrow">{{ mes.toUpperCase() }}</span><h2>Egresos por categoría</h2></div></div>
+                @for (c of egresosPorCategoria(); track c.categoria) {
+                  <div class="barra-fila">
+                    <span class="barra-mes">{{ c.categoria }}</span>
+                    <div class="report-bar barra-fina"><span class="barra-roja" [style.width.%]="c.pct"></span></div>
+                    <b>&#36;{{ fmtMonto(c.total) }}</b>
+                  </div>
+                } @empty {
+                  <div class="table-empty-state">Aún no hay egresos este mes.</div>
+                }
+              </article>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header"><div><span class="eyebrow">HISTORIAL</span><h2>Egresos registrados</h2></div></div>
+              <div class="table-wrapper">
+                <table>
+                  <thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Monto</th><th></th></tr></thead>
+                  <tbody>
+                    @for (e of egresosOrdenados(); track e.id) {
+                      <tr>
+                        <td>{{ fmtFecha(e.fecha) }}</td>
+                        <td>{{ e.concepto }}</td>
+                        <td>{{ e.categoria }}</td>
+                        <td>&#36;{{ fmtMonto(e.monto) }}</td>
+                        <td><button class="table-action" (click)="eliminarEgreso(e.id)">Eliminar</button></td>
+                      </tr>
+                    } @empty {
+                      <tr><td colspan="5" class="table-empty-state">Aún no hay egresos registrados.</td></tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ============ MULTAS ============ -->
+        @case ('multas') {
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">CONTROL</span>
+                <h1>Multas</h1>
+                <p>Crea multas a los residentes. Les aparecerán en la app al instante.</p>
+              </div>
+            </div>
+
+            <div class="stats-grid">
+              <article class="stat-card">
+                <div class="stat-icon fines-icon">!</div>
+                <div class="stat-content"><span>Multas pendientes</span><strong>{{ multasPendientes().length }}</strong><small>por cobrar</small></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-icon payments-icon">$</div>
+                <div class="stat-content"><span>Monto pendiente</span><strong>&#36;{{ fmtMonto(totalMultasPendientes()) }}</strong><small>en multas</small></div>
+              </article>
+            </div>
+
+            <div class="panel new-post-panel">
+              <div class="panel-header"><div><span class="eyebrow">NUEVA</span><h2>Crear multa</h2></div></div>
+
+              <select class="multa-select" (change)="mUid.set($any($event.target).value)">
+                <option value="" [selected]="!mUid()">Selecciona un residente</option>
+                @for (u of residentes(); track u.uid) {
+                  <option [value]="u.uid" [selected]="mUid() === u.uid">
+                    {{ u.nombre || u.correo }}{{ u.depto ? ' · ' + u.depto : '' }}
+                  </option>
+                }
+              </select>
+
+              <input type="text" placeholder="Motivo (ej: Ruido después de las 23:00)"
+                     [value]="mMotivo()" (input)="mMotivo.set($any($event.target).value)">
+              <input type="number" min="1" placeholder="Monto en pesos (ej: 25000)"
+                     [value]="mMonto()" (input)="mMonto.set($any($event.target).value)">
+              <input type="date" [value]="mFecha()" (input)="mFecha.set($any($event.target).value)">
+
+              <button class="primary-button" (click)="crearMulta()">Crear multa</button>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header"><div><span class="eyebrow">HISTORIAL</span><h2>Multas emitidas</h2></div></div>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr><th>Residente</th><th>Motivo</th><th>Monto</th><th>Fecha</th><th>Estado</th><th></th></tr>
+                  </thead>
+                  <tbody>
+                    @for (m of multasOrdenadas(); track m.id) {
+                      <tr>
+                        <td>{{ nombreDe(m.uid) }}</td>
+                        <td>{{ m.motivo }}</td>
+                        <td>&#36;{{ fmtMonto(m.monto) }}</td>
+                        <td>{{ fmtFecha(m.fecha) }}</td>
+                        <td>
+                          @if (m.estado === 'pagada') {
+                            <span class="status-badge confirmed">Pagada</span> <small>{{ m.comprobante }}</small>
+                          } @else {
+                            <span class="status-badge pending">Pendiente</span>
+                          }
+                        </td>
+                        <td>
+                          <div class="acciones-multa">
+                            @if (m.estado === 'pendiente') {
+                              <button class="table-action" (click)="marcarMultaPagada(m.id)">Marcar pagada</button>
+                            }
+                            <button class="table-action" (click)="eliminarMulta(m.id)">Eliminar</button>
+                          </div>
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr><td colspan="6" class="table-empty-state">Aún no hay multas emitidas.</td></tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ============ RESERVAS ============ -->
+        @case ('reservas') {
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">ESPACIOS COMUNES</span>
+                <h1>Reservas</h1>
+                <p>Visualiza las reservas del condominio en tiempo real.</p>
+              </div>
+            </div>
+            <div class="spaces-grid">
+              @for (e of espacios; track e) {
+                <article class="space-admin-card">
+                  <div class="space-admin-icon">□</div>
+                  <strong>{{ e }}</strong>
+                  <span>Espacio común</span>
+                  <small>{{ reservasDeEspacioHoy(e) }} reserva(s) hoy</small>
+                </article>
+              }
+            </div>
+            <div class="panel">
+              <div class="panel-header"><div><span class="eyebrow">AGENDA</span><h2>Próximas reservas</h2></div></div>
+              <div class="admin-reservation-list">
+                @for (r of reservasProximas().slice(0, 30); track r.id) {
+                  <div class="admin-reservation">
+                    <div class="reservation-date"><strong>{{ diaMes(r.fecha).d }}</strong><span>{{ diaMes(r.fecha).m }}</span></div>
+                    <div class="reservation-info"><strong>{{ r.espacio }}</strong><span>{{ nombreDe(r.uid) }} · {{ r.horario }}</span></div>
+                    <span class="status-badge confirmed">Confirmada</span>
+                    <button class="table-action" (click)="cancelarReserva(r.id)">Cancelar</button>
+                  </div>
+                } @empty {
+                  <div class="table-empty-state">No hay reservas próximas.</div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <!-- ============ COMUNIDAD ============ -->
+        @case ('comunidad') {
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">COMUNICACIÓN</span>
+                <h1>Comunidad</h1>
+                <p>Publicaciones de todos los residentes.</p>
+              </div>
+            </div>
+            <div class="community-admin-grid">
+              <article class="panel">
+                <div class="panel-header"><div><span class="eyebrow">PUBLICACIONES</span><h2>Actividad reciente</h2></div></div>
+                @for (p of posts().slice(0, 15); track p.id) {
+                  <div class="admin-post">
+                    <div class="post-admin-avatar">{{ iniciales(p.author) }}</div>
+                    <div class="post-admin-content">
+                      <div><strong>{{ p.author }}</strong><span>{{ tiempoRelativo(p.createdAt?.seconds) }}</span></div>
+                      <h3>{{ p.title }}</h3>
+                      <p>{{ p.body }}</p>
+                      <div class="post-admin-actions">
+                        <button (click)="eliminarPost(p.id, 'publicación')">Eliminar</button>
+                      </div>
+                    </div>
+                  </div>
+                } @empty {
+                  <div class="table-empty-state">No hay publicaciones todavía.</div>
+                }
+              </article>
+
+              <article class="panel community-summary">
+                <div class="panel-header"><div><span class="eyebrow">RESUMEN</span><h2>Actividad</h2></div></div>
+                <div class="community-stat"><strong>{{ posts().length }}</strong><span>Publicaciones totales</span></div>
+                <div class="community-stat"><strong>{{ totalComentarios() }}</strong><span>Comentarios</span></div>
+                <div class="community-stat"><strong>{{ residentes().length }}</strong><span>Residentes alcanzados</span></div>
+              </article>
+            </div>
+          </section>
+        }
+
+        <!-- ============ AVISOS ============ -->
+        @case ('avisos') {
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">COMUNICACIONES</span>
+                <h1>Avisos oficiales</h1>
+                <p>Publica información importante a nombre de la Administración.</p>
+              </div>
+            </div>
+
+            <div class="panel new-post-panel">
+              <div class="panel-header"><div><span class="eyebrow">NUEVO</span><h2>Crear aviso</h2></div></div>
+              <input #titulo type="text" placeholder="Título del aviso">
+              <textarea #cuerpo placeholder="Escribe el contenido del aviso..."></textarea>
+              <button class="primary-button" (click)="publicarAviso(titulo.value, cuerpo.value, titulo, cuerpo)">Publicar aviso</button>
+            </div>
+
+            <div class="notice-admin-list">
+              @for (p of avisos(); track p.id) {
+                <article class="panel notice-admin-card">
+                  <div class="notice-icon large">!</div>
+                  <div class="notice-admin-content">
+                    <div class="notice-admin-header">
+                      <div><span class="eyebrow">ADMINISTRACIÓN</span><h2>{{ p.title }}</h2></div>
+                      <span class="status-badge confirmed">Publicado</span>
+                    </div>
+                    <p>{{ p.body }}</p>
+                    <small>{{ fmtTimestamp(p.createdAt) }}</small>
+                    <div class="post-admin-actions" style="margin-top:10px;">
+                      <button (click)="eliminarPost(p.id, 'aviso')">Eliminar</button>
+                    </div>
+                  </div>
+                </article>
+              } @empty {
+                <div class="table-empty-state">Aún no has publicado avisos.</div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- ============ REPORTES ============ -->
+        @case ('reportes') {
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">ANÁLISIS</span>
+                <h1>Reportes</h1>
+                <p>Indicadores del condominio y exportación de datos.</p>
+              </div>
+            </div>
+
+            <div class="report-grid" style="margin-bottom:20px;">
+              <article class="panel report-card">
+                <span class="eyebrow">RECAUDACIÓN</span>
+                <strong>{{ porcentaje() }}%</strong>
+                <p>&#36;{{ fmtMonto(totalRecaudado()) }} recaudados en {{ mes }}.</p>
+                <div class="report-bar"><span [style.width.%]="porcentaje() > 100 ? 100 : porcentaje()"></span></div>
+              </article>
+              <article class="panel report-card">
+                <span class="eyebrow">MOROSIDAD</span>
+                <strong>{{ morosidad() }}%</strong>
+                <p>{{ pendientes() }} de {{ residentes().length }} residentes sin pagar este mes.</p>
+                <div class="report-bar"><span [style.width.%]="morosidad()"></span></div>
+              </article>
+              <article class="panel report-card">
+                <span class="eyebrow">MULTAS</span>
+                <strong>{{ multasPendientes().length }}</strong>
+                <p>Multas pendientes por &#36;{{ fmtMonto(totalMultasPendientes()) }}.</p>
+              </article>
+              <article class="panel report-card">
+                <span class="eyebrow">BALANCE DEL MES</span>
+                <strong>{{ finMes().balance < 0 ? '-' : '' }}&#36;{{ fmtMonto(finMes().balance < 0 ? -finMes().balance : finMes().balance) }}</strong>
+                <p>Ingresos &#36;{{ fmtMonto(finMes().ingresos) }} menos egresos &#36;{{ fmtMonto(finMes().egresos) }}.</p>
+              </article>
+            </div>
+
+            <div class="dashboard-bottom-grid" style="margin-bottom:20px;">
+              <article class="panel">
+                <div class="panel-header"><div><span class="eyebrow">ÚLTIMOS 6 MESES</span><h2>Ingresos vs egresos</h2></div></div>
+                @for (f of serieFinanzas(); track f.clave) {
+                  <div class="rep-mes">
+                    <span class="barra-mes">{{ f.etiqueta }}</span>
+                    <div class="rep-barras">
+                      <div class="report-bar barra-fina"><span [style.width.%]="f.pi"></span></div>
+                      <div class="report-bar barra-fina"><span class="barra-roja" [style.width.%]="f.pe"></span></div>
+                    </div>
+                    <div class="rep-valores"><b class="v-ing">&#36;{{ fmtMonto(f.ingresos) }}</b><b class="v-egr">&#36;{{ fmtMonto(f.egresos) }}</b></div>
+                  </div>
+                }
+              </article>
+
+              <article class="panel">
+                <div class="panel-header"><div><span class="eyebrow">COBRANZA</span><h2>Residentes sin pagar ({{ mes }})</h2></div></div>
+                @for (u of morosos().slice(0, 8); track u.uid) {
+                  <div class="notif-item sin-borde">
+                    <div class="table-avatar">{{ iniciales(u.nombre) }}</div>
+                    <div class="notif-texto"><strong>{{ u.nombre || 'Sin nombre' }}</strong><span>{{ u.torre ? 'Torre ' + u.torre + ' · ' : '' }}{{ u.depto || '—' }}</span></div>
+                    <span class="pending-text">&#36;{{ fmtMonto(valorTotal()) }}</span>
+                  </div>
+                } @empty {
+                  <div class="table-empty-state">Todos los residentes están al día.</div>
+                }
+              </article>
+            </div>
+
+            <div class="dashboard-bottom-grid">
+              <article class="panel">
+                <div class="panel-header"><div><span class="eyebrow">ESPACIOS</span><h2>Reservas próximas por espacio</h2></div></div>
+                <div class="table-wrapper">
+                  <table>
+                    <thead><tr><th>Espacio</th><th>Reservas próximas</th></tr></thead>
+                    <tbody>
+                      @for (e of reservasPorEspacio(); track e.espacio) {
+                        <tr><td>{{ e.espacio }}</td><td>{{ e.total }}</td></tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-header"><div><span class="eyebrow">EXPORTAR</span><h2>Descargar datos (CSV)</h2></div></div>
+                <div class="acciones-reporte">
+                  <button class="primary-button" (click)="exportarResidentes()">Residentes</button>
+                  <button class="primary-button" (click)="exportarPagos()">Pagos</button>
+                  <button class="primary-button" (click)="exportarEgresos()">Egresos</button>
+                  <button class="primary-button" (click)="exportarMultas()">Multas</button>
+                </div>
+              </article>
+            </div>
+          </section>
+        }
+
+        <!-- ============ CONFIGURACIÓN ============ -->
+        @case ('configuracion') {
+          <section class="panel new-post-panel">
+            <h2>Cuenta bancaria para transferencias</h2>
+            @for (campo of camposBanco; track campo) {
+              <label [attr.for]="'transferencia-' + campo">{{ campo }}</label>
+              <input #dato [id]="'transferencia-' + campo" type="text" maxlength="120"
+                [value]="datosBanco()[campo]" (input)="editarBanco(campo, dato.value)">
+            }
+            <button class="primary-button" type="button" (click)="guardarBanco()">Guardar cuenta bancaria</button>
+          </section>
+          <section class="screen active">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">SISTEMA</span>
+                <h1>Configuración</h1>
+                <p>Valores del condominio y administradores.</p>
+              </div>
+            </div>
+
+            <div class="dashboard-bottom-grid">
+              <article class="panel new-post-panel">
+                <div class="panel-header"><div><span class="eyebrow">COBRO MENSUAL</span><h2>Gasto común</h2></div></div>
+
+                <label class="cfg-label">Gastos comunes (CLP)</label>
+                <input type="number" min="1" [value]="cfgGasto()" (input)="cfgGasto.set($any($event.target).value)">
+
+                <label class="cfg-label">Fondo de reserva (CLP)</label>
+                <input type="number" min="0" [value]="cfgFondo()" (input)="cfgFondo.set($any($event.target).value)">
+
+                <p class="cfg-total">Total mensual por residente: <b>&#36;{{ fmtMonto(valorTotal()) }}</b></p>
+                <button class="primary-button" (click)="guardarConfig()">Guardar valores</button>
+                <p class="cfg-nota">El nuevo valor se usa en el panel y en la app de los residentes al próximo ingreso.</p>
+              </article>
+
+              <article class="panel new-post-panel">
+                <div class="panel-header"><div><span class="eyebrow">PERMISOS</span><h2>Administradores</h2></div></div>
+
+                <label class="cfg-label">Agregar administrador (correo de una cuenta ya registrada)</label>
+                <input type="email" placeholder="correo@ejemplo.com"
+                       [value]="nuevoAdminEmail()" (input)="nuevoAdminEmail.set($any($event.target).value)">
+                <button class="primary-button" (click)="agregarAdmin()">Dar permisos de administrador</button>
+
+                <div class="lista-admins">
+                  @for (a of admins(); track a.uid) {
+                    <div class="notif-item">
+                      <div class="table-avatar">{{ iniciales(a.nombre || a.correo) }}</div>
+                      <div class="notif-texto">
+                        <strong>{{ a.nombre || 'Sin nombre' }}{{ a.uid === miUid ? ' (tú)' : '' }}</strong>
+                        <span>{{ a.correo }}</span>
+                      </div>
+                      @if (a.uid !== miUid) {
+                        <button class="table-action" (click)="quitarAdmin(a.uid)">Quitar</button>
+                      }
+                    </div>
+                  }
+                </div>
+              </article>
+            </div>
+          </section>
+        }
+      }
+
+    </main>
+  </div>
+</ion-content>

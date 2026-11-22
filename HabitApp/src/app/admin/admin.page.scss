@@ -1,0 +1,372 @@
+@use 'sass:meta';
+
+app-admin {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-soft: #eff6ff;
+
+  --background: #f5f7fb;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+
+  --text: #16181d;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --border: #e5e7eb;
+
+  --success: #16a34a;
+  --success-soft: #ecfdf3;
+
+  --warning: #d97706;
+  --warning-soft: #fff7ed;
+
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+
+  --purple: #7c3aed;
+  --purple-soft: #f5f3ff;
+
+  --radius-small: 10px;
+  --radius-medium: 14px;
+  --radius-large: 18px;
+
+  --shadow-soft: 0 2px 10px rgba(15, 23, 42, 0.04);
+  --shadow-medium: 0 8px 24px rgba(15, 23, 42, 0.06);
+
+  --side: 250px;
+
+  display: block;
+  width: 100%;
+  min-height: 100%;
+}
+
+/* Tu CSS original, anidado bajo app-admin */
+app-admin {
+  @include meta.load-css('admin.css');
+}
+
+app-admin ion-content {
+  --background: #f5f7fb;
+  --color: #16181d;
+  color: #16181d;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+/* ===== Layout responsive (sin cortes a la derecha) ===== */
+@media (max-width: 1200px) { app-admin { --side: 220px; } }
+
+app-admin .admin-layout { display: block !important; min-height: 100%; }
+app-admin .sidebar { width: var(--side) !important; z-index: 1000; }
+app-admin .main-content {
+  width: auto !important;
+  margin-left: var(--side) !important;
+  min-width: 0;
+  overflow-x: hidden;
+}
+app-admin .main-content > * { max-width: 100%; }
+app-admin .panel, app-admin .stat-card, app-admin .fin-card { min-width: 0; }
+app-admin .backdrop { display: none; }
+
+/* ===== Textos legibles (el original usaba 8 a 10 px) ===== */
+app-admin .menu-item { font-size: 14px; }
+app-admin .stat-content span { font-size: 12px; }
+app-admin .stat-content strong { font-size: 22px; }
+app-admin .stat-content small { font-size: 11px; }
+app-admin .panel-header h2 { font-size: 16px; }
+app-admin .page-header p { font-size: 13px; }
+app-admin .payment-total span, app-admin .payment-mini-grid span { font-size: 12px; }
+app-admin .payment-mini-grid strong { font-size: 16px; }
+app-admin .progress-header span, app-admin .progress-header strong, app-admin .progress-footer span { font-size: 11px; }
+app-admin .activity-text strong, app-admin .reservation-info strong, app-admin .notice-item strong,
+app-admin .space-admin-card strong, app-admin .resident-cell strong { font-size: 13px; }
+app-admin .activity-text span, app-admin .reservation-info span, app-admin .notice-item span,
+app-admin .space-admin-card span, app-admin .space-admin-card small,
+app-admin .resident-cell span, app-admin .community-stat span { font-size: 12px; }
+app-admin .activity-item small { font-size: 11px; }
+app-admin .reservation-date span { font-size: 9px; }
+app-admin .status-badge { font-size: 11px; padding: 5px 10px; }
+app-admin .table-action { font-size: 12px; }
+app-admin .text-button { font-size: 12px; }
+app-admin thead th { font-size: 11px; }
+app-admin tbody td { font-size: 13px; }
+app-admin .post-admin-content > div:first-child strong { font-size: 13px; }
+app-admin .post-admin-content > div:first-child span { font-size: 11px; }
+app-admin .post-admin-content h3 { font-size: 14px; }
+app-admin .post-admin-content p, app-admin .notice-admin-content p { font-size: 13px; }
+app-admin .post-admin-actions button { font-size: 12px; }
+app-admin .notice-admin-content small { font-size: 11px; }
+app-admin .report-card > p { font-size: 12px; }
+app-admin .admin-profile-info strong { font-size: 13px; }
+app-admin .admin-profile-info span { font-size: 11px; }
+app-admin .topbar-search input, app-admin .table-search input { font-size: 13px; }
+app-admin .topbar-actions { gap: 10px; }
+
+/* ===== Campana de notificaciones ===== */
+app-admin .notif-wrap { position: relative; }
+app-admin .notif-btn {
+  position: relative;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 11px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+app-admin .notif-btn svg { width: 20px; height: 20px; }
+app-admin .notif-btn:hover { background: var(--primary-soft); color: var(--primary); }
+app-admin .notif-badge {
+  position: absolute; top: -4px; right: -4px;
+  min-width: 18px; height: 18px; padding: 0 5px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 20px;
+  background: var(--danger); color: #fff;
+  font-size: 11px; font-weight: 700;
+  border: 2px solid #fff;
+}
+app-admin .notif-panel {
+  position: absolute; right: 0; top: 50px;
+  width: min(360px, 92vw);
+  max-height: 65vh; overflow-y: auto;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-medium);
+  z-index: 70;
+}
+app-admin .notif-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+app-admin .notif-head strong { font-size: 14px; }
+app-admin .notif-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid #f0f2f5;
+}
+app-admin .notif-item:last-child { border-bottom: 0; }
+app-admin .notif-item.sin-borde { padding-left: 0; padding-right: 0; }
+app-admin .notif-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+app-admin .notif-texto strong { font-size: 13px; }
+app-admin .notif-texto span {
+  font-size: 12px; color: var(--text-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ===== Aviso de registros pendientes ===== */
+app-admin .alerta-registro {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 14px 18px; margin-bottom: 20px;
+  background: var(--warning-soft);
+  border: 1px solid #fed7aa;
+  border-radius: 14px;
+}
+app-admin .alerta-registro strong { display: block; font-size: 14px; color: #9a3412; }
+app-admin .alerta-registro span { font-size: 12px; color: #c2410c; }
+
+/* ===== Ingresos y egresos ===== */
+app-admin .fin-panel { margin-bottom: 20px; }
+app-admin .fin-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+app-admin .fin-card {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+}
+app-admin .fin-card span { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+app-admin .fin-card strong { font-size: 20px; letter-spacing: -0.4px; word-break: break-word; }
+app-admin .fin-card small { font-size: 11px; color: var(--text-muted); }
+app-admin .fin-card.ing { background: var(--success-soft); border-color: #bbf7d0; }
+app-admin .fin-card.ing strong { color: var(--success); }
+app-admin .fin-card.egr { background: var(--danger-soft); border-color: #fecaca; }
+app-admin .fin-card.egr strong { color: var(--danger); }
+app-admin .fin-card.bal { background: var(--primary-soft); border-color: #bfdbfe; }
+app-admin .fin-card.bal strong { color: var(--primary); }
+app-admin .fin-card.caja strong { color: var(--text); }
+app-admin .fin-card.neg strong { color: var(--danger); }
+
+app-admin .fin-leyenda { display: flex; gap: 16px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
+app-admin .fin-leyenda .pt {
+  display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px;
+}
+app-admin .pt.ing, app-admin .fin-bar.ing { background: var(--success); }
+app-admin .pt.egr, app-admin .fin-bar.egr { background: var(--danger); }
+
+app-admin .fin-chart {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  align-items: end;
+}
+app-admin .fin-col { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+app-admin .fin-bars {
+  width: 100%; height: 150px;
+  display: flex; align-items: flex-end; justify-content: center; gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+app-admin .fin-bar { width: 38%; max-width: 26px; border-radius: 6px 6px 0 0; min-height: 0; transition: height 0.3s; }
+app-admin .fin-col small { font-size: 12px; color: var(--text-secondary); }
+
+/* ===== Reportes ===== */
+app-admin .report-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important; }
+app-admin .barra-fila {
+  display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: 10px;
+  padding: 8px 0;
+}
+app-admin .barra-fila .barra-mes { font-size: 12px; color: var(--text-secondary); }
+app-admin .barra-fila b { font-size: 12px; }
+app-admin .barra-fina { margin-top: 0; height: 8px; }
+app-admin .barra-roja { background: var(--danger) !important; }
+app-admin .rep-mes {
+  display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid #f0f2f5;
+}
+app-admin .rep-mes:last-child { border-bottom: 0; }
+app-admin .rep-barras { display: flex; flex-direction: column; gap: 4px; }
+app-admin .rep-valores { display: flex; flex-direction: column; text-align: right; gap: 2px; }
+app-admin .rep-valores b { font-size: 12px; }
+app-admin .v-ing { color: var(--success); }
+app-admin .v-egr { color: var(--danger); }
+app-admin .acciones-reporte { display: flex; flex-direction: column; gap: 10px; }
+
+/* ===== Formularios ===== */
+app-admin .multa-select {
+  width: 100%; padding: 10px 12px; margin-bottom: 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-small);
+  background: #fff; color: var(--text); font-family: inherit; font-size: 13px;
+}
+app-admin .new-post-panel input[type='date'],
+app-admin .new-post-panel input[type='number'] { background: #fff; color: var(--text); }
+app-admin .new-post-panel input[type='email'] {
+  width: 100%; padding: 10px 12px; margin-bottom: 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-small);
+  font-family: inherit; font-size: 13px;
+}
+app-admin .acciones-multa { display: flex; gap: 6px; flex-wrap: wrap; }
+app-admin .cfg-label { display: block; margin: 4px 0 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+app-admin .cfg-total { margin: 4px 0 14px; font-size: 14px; color: var(--text-secondary); }
+app-admin .cfg-nota { margin: 12px 0 0; font-size: 12px; color: var(--text-muted); }
+app-admin .lista-admins { margin-top: 18px; border-top: 1px solid var(--border); }
+app-admin .lista-admins .notif-item { padding-left: 0; padding-right: 0; }
+
+/* ===== Tablet ===== */
+@media (max-width: 1100px) {
+  app-admin .fin-resumen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ===== Celular y tablet chica: menu deslizable ===== */
+@media (max-width: 900px) {
+  app-admin .backdrop {
+    display: block;
+    position: fixed; inset: 0; z-index: 900;
+    background: rgba(15, 23, 42, 0.45);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  app-admin .backdrop.show { opacity: 1; pointer-events: auto; }
+
+  app-admin .main-content { margin-left: 0 !important; }
+  app-admin .sidebar {
+    width: 270px !important;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+  }
+  app-admin .sidebar.mobile-open { transform: translateX(0); }
+
+  app-admin .topbar { justify-content: space-between; }
+  app-admin .topbar-search { display: none; }
+  app-admin .mobile-menu-button { margin-right: 0; cursor: pointer; }
+  app-admin .admin-profile-info { display: none; }
+}
+
+@media (max-width: 650px) {
+  app-admin .screen { padding: 20px 14px; }
+  app-admin .page-header h1 { font-size: 21px; }
+  app-admin .fin-resumen { grid-template-columns: 1fr 1fr; gap: 8px; }
+  app-admin .fin-card { padding: 11px; }
+  app-admin .fin-card strong { font-size: 16px; }
+  app-admin .fin-bars { height: 110px; }
+  app-admin .admin-reservation { flex-wrap: wrap; }
+  app-admin .admin-reservation .table-action { margin-left: auto; }
+  app-admin .alerta-registro { flex-direction: column; align-items: stretch; }
+  app-admin .barra-fila { grid-template-columns: 1fr auto; }
+  app-admin .barra-fila .report-bar { grid-column: 1 / -1; order: 3; }
+  app-admin .acciones-multa { flex-direction: column; }
+  app-admin table { min-width: 520px; }
+  app-admin .notice-admin-card { flex-direction: column; }
+}
+
+@media (max-width: 430px) {
+  app-admin .fin-resumen { grid-template-columns: 1fr; }
+}
+.habit-demo-admin { margin-bottom: 24px; padding: 20px; }
+.habit-demo-admin p { font-size: 13px; line-height: 1.5; }
+.habit-demo-admin .table-wrap { overflow-x: auto; }
+.habit-demo-admin table { width: 100%; border-collapse: collapse; }
+.habit-demo-admin td, .habit-demo-admin th { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+.habit-demo-admin small { overflow-wrap: anywhere; }
+.habit-demo-admin button { padding: 8px 12px; margin: 3px; border-radius: 8px; border: 1px solid #d4d4d8; background: #f4f4f5; color: #18181b; cursor: pointer; }
+
+.pago-codigo { display: inline-block; max-width: 165px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+.pago-referencia { display: block; margin-top: 4px; color: #64748b; }
+.status-badge.payment-review { background: #fff7ed; color: #9a3412; }
+.status-badge.payment-rejected { background: #fef2f2; color: #b91c1c; }
+
+
+/* ===== Topbar sin buscador ===== */
+@media (min-width: 901px) {
+  app-admin .topbar { justify-content: flex-end; }
+}
+
+/* ===== Detalle de recaudacion ===== */
+app-admin .rec-detalle {
+  margin-bottom: 16px; padding: 14px 16px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+app-admin .rec-detalle > div {
+  display: flex; justify-content: space-between; gap: 12px;
+  padding: 5px 0; font-size: 13px;
+}
+app-admin .rec-detalle span { color: var(--text-secondary); }
+app-admin .rec-titulo { font-size: 12px !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
+app-admin .rec-total { margin-top: 4px; padding-top: 8px !important; border-top: 1px dashed var(--border); }
+app-admin .rec-total b { color: var(--success); font-size: 15px; }
+app-admin .rec-pend b { color: var(--warning); }
+
+/* ===== Espacios comunes ===== */
+app-admin .esp-form {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.4fr auto;
+  gap: 10px; margin-bottom: 16px; align-items: center;
+}
+app-admin .esp-form input {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius-small);
+  font-family: inherit; font-size: 13px; background: #fff; color: var(--text);
+}
+app-admin .precio-input {
+  width: 120px; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-family: inherit; font-size: 13px;
+}
+app-admin .filtro-esp { width: auto; margin: 0; min-width: 180px; }
+
+@media (max-width: 900px) {
+  app-admin .esp-form { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 650px) {
+  app-admin .esp-form { grid-template-columns: 1fr; }
+  app-admin .panel-header { flex-wrap: wrap; }
+}

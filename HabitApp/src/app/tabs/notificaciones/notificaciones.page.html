@@ -1,0 +1,34 @@
+﻿<ion-content class="ion-padding" [fullscreen]="true">
+
+  <header class="av-header">
+    <div>
+      <span class="eyebrow">Actualizaciones</span>
+      <h1>Avisos</h1>
+    </div>
+    @if (svc.lista().length > 0) {
+      <button class="mark-all" type="button" (click)="svc.marcarTodoLeido()">Marcar todo le&iacute;do</button>
+    }
+  </header>
+
+  <p class="av-sub">Mantente al d&iacute;a con la comunidad.</p>
+
+  @if (svc.lista().length === 0) {
+    <div class="av-empty">No tienes avisos por ahora.</div>
+  }
+
+  @for (a of svc.lista(); track a.id) {
+    <div class="av-card" [class.unread]="!a.leida" (click)="abrir(a)">
+      @if (!a.leida) {
+        <span class="av-dot"></span>
+      }
+      <div [class]="'av-icon ' + a.tipo">{{ icono(a.tipo) }}</div>
+      <div class="av-body">
+        <strong>{{ a.titulo }}</strong>
+        <p>{{ a.detalle }}</p>
+        <small>{{ tiempo(a.ts) }}</small>
+      </div>
+      <button class="av-x" type="button" aria-label="Descartar" (click)="descartar($event, a)">&#10005;</button>
+    </div>
+  }
+
+</ion-content>

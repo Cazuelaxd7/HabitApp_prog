@@ -1,0 +1,73 @@
+﻿<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-hero">
+    <div class="login-logo">&#127968;</div>
+    <h1>Crear cuenta</h1>
+    <p>&Uacute;nete a tu comunidad en HabitApp.</p>
+  </div>
+
+  <div class="login-sheet">
+    <form (ngSubmit)="onSubmit()">
+      <div class="hb-field">
+        <label>Nombre completo</label>
+        <input type="text" [(ngModel)]="nombre" name="nombre" placeholder="Tu nombre" autocomplete="name" required />
+      </div>
+
+      <div class="hb-field">
+        <label>RUT</label>
+        <input type="text" [(ngModel)]="rut" name="rut" placeholder="12.345.678-5" required />
+      </div>
+
+      <div class="hb-field">
+        <label>Correo electr&oacute;nico</label>
+        <input type="email" [(ngModel)]="email" name="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" required />
+      </div>
+
+      <div class="hb-field">
+        <label>Condominio</label>
+        <select [(ngModel)]="condominioId" name="condominioId" required>
+          @for (c of condominios; track c.id) {
+            <option [value]="c.id">{{ c.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="hb-field">
+        <label>Torre / Bloque</label>
+        <input type="text" [(ngModel)]="torre" name="torre" placeholder="Ej: B" required />
+      </div>
+
+      <div class="hb-field">
+        <label>N&uacute;mero de depto</label>
+        <input type="text" [(ngModel)]="depto" name="depto" placeholder="Ej: 704" required />
+      </div>
+
+      <div class="hb-field">
+        <label>Tel&eacute;fono</label>
+        <input type="tel" [(ngModel)]="telefono" name="telefono" placeholder="+56 9 1234 5678" autocomplete="tel" required />
+      </div>
+
+      <div class="hb-field">
+        <label>Contrase&ntilde;a</label>
+        <input type="password" [(ngModel)]="password" name="password" placeholder="M&iacute;nimo 6 caracteres" autocomplete="new-password" required />
+      </div>
+
+      <div class="hb-field">
+        <label>Confirmar contrase&ntilde;a</label>
+        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Repite tu contrase&ntilde;a" autocomplete="new-password" required />
+      </div>
+
+      <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
+
+      <button class="primary-button" type="submit" [disabled]="cargando">
+        {{ cargando ? 'Creando cuenta...' : 'Crear cuenta' }}
+      </button>
+    </form>
+
+    <div class="login-divider"><span>o</span></div>
+
+    <p class="login-register-text">
+      &iquest;Ya tienes cuenta?
+      <button class="text-button" type="button" (click)="goToLogin()">Inicia sesi&oacute;n</button>
+    </p>
+  </div>
+</ion-content>

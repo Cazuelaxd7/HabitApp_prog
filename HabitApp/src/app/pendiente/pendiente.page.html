@@ -1,0 +1,13 @@
+<ion-content [fullscreen]="true" class="pend-content">
+  <div class="pend-wrap">
+    <div class="pend-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+      </svg>
+    </div>
+    <h1>Cuenta en verificación</h1>
+    <p>Hola{{ nombre ? ', ' + nombre : '' }}. Tu registro fue recibido y la administración debe verificarlo antes de que puedas usar HabitApp.</p>
+    <p class="pend-sub">Esta pantalla se actualizará sola cuando tu cuenta sea activada.</p>
+    <button class="pend-btn" type="button" (click)="salir()">Cerrar sesión</button>
+  </div>
+</ion-content>

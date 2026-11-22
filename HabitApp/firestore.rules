@@ -1,0 +1,153 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function perfil() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+    function esAdmin() {
+      return signedIn() && perfil().rol == 'admin';
+    }
+    // Verificado = estado activo (o admin). Cuentas antiguas sin estado cuentan como activas.
+    function activo() {
+      return signedIn() && (perfil().rol == 'admin' || perfil().get('estado', 'activo') == 'activo');
+    }
+
+    match /meta/contadores {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.usuarios == 1;
+      allow update: if signedIn()
+        && request.resource.data.usuarios == resource.data.usuarios + 1;
+    }
+
+    match /condominios/{id} {
+      allow read: if signedIn();
+      allow write: if esAdmin();
+    }
+
+    match /config/{id} {
+      allow read: if signedIn();
+      allow write: if esAdmin();
+    }
+
+    // Egresos del condominio: solo la administracion
+    // Espacios comunes: los administra solo el admin, los residentes los leen
+    match /espacios/{id} {
+      allow read: if activo();
+      allow write: if esAdmin();
+    }
+
+    match /egresos/{id} {
+      allow read, write: if esAdmin();
+    }
+
+    match /usuarios/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || esAdmin());
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.rol == 'residente'
+        && request.resource.data.estado == 'pendiente';
+      allow update: if signedIn() && (
+        (request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['telefono']))
+        || esAdmin()
+      );
+    }
+
+    match /reservas/{id} {
+      allow read: if activo();
+      allow create: if activo() && request.resource.data.uid == request.auth.uid;
+      allow update: if activo() && (resource.data.uid == request.auth.uid || esAdmin());
+    }
+
+    match /posts/{id} {
+      allow read: if activo();
+      allow create: if activo()
+        && request.resource.data.authorUid == request.auth.uid
+        && (request.resource.data.category == 'comunidad' || esAdmin());
+      allow update: if activo() && (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likedBy', 'commentsCount'])
+        || resource.data.authorUid == request.auth.uid
+        || esAdmin()
+      );
+      allow delete: if activo() && (resource.data.authorUid == request.auth.uid || esAdmin());
+
+      match /comments/{cid} {
+        allow read, create: if activo();
+      }
+    }
+
+    // Demostración académica aislada. Nunca habilita escrituras en pagos reales.
+    match /pagosDemo/{id} {
+      function demoValida() {
+        let d = request.resource.data;
+        return d.keys().hasAll(['uid','tipo','objetivo','mes','monto','metodo','estado','referencia','comprobante','simulado','cuentaDestino','createdAt'])
+          && d.keys().hasOnly(['uid','tipo','objetivo','mes','monto','metodo','estado','referencia','comprobante','simulado','cuentaDestino','createdAt'])
+          && d.uid == request.auth.uid && d.simulado == true
+          && d.tipo in ['gasto','multa']
+          && d.objetivo is string && d.objetivo.size() > 0 && d.objetivo.size() < 160
+          && id == d.uid + '__' + d.tipo + '__' + d.objetivo
+          && d.mes is string && d.mes.size() <= 40
+          && d.monto is int && d.monto > 0 && d.monto <= 100000000
+          && d.comprobante is string && d.comprobante.matches('DEMO-[a-f0-9-]{36}')
+          && d.createdAt == request.time
+          && d.referencia is string && d.referencia.size() <= 80
+          && d.cuentaDestino is map
+          && ((d.metodo == 'Simulador' && d.estado in ['aprobado','rechazado']
+                && d.referencia == '' && d.cuentaDestino.size() == 0)
+            || (d.metodo == 'Transferencia demo' && d.tipo == 'gasto' && d.estado == 'en_revision'
+                && d.referencia.size() >= 4
+                && d.cuentaDestino == get(/databases/$(database)/documents/config/transferencia).data))
+          && (d.tipo == 'gasto'
+            ? (d.objetivo.matches('[0-9]{4}-[0-9]{2}') && d.monto == totalDemo())
+            : (get(/databases/$(database)/documents/multas/$(d.objetivo)).data.uid == request.auth.uid
+              && get(/databases/$(database)/documents/multas/$(d.objetivo)).data.estado == 'pendiente'
+              && get(/databases/$(database)/documents/multas/$(d.objetivo)).data.monto == d.monto));
+      }
+      function totalDemo() {
+        let path = /databases/$(database)/documents/config/general;
+        return exists(path) ? get(path).data.get('gastoComun', 40000) + get(path).data.get('fondoReserva', 5000) : 45000;
+      }
+      // Permite comprobar inexistencia en la transacción; no leer registros ajenos.
+      allow get: if activo() && (!exists(/databases/$(database)/documents/pagosDemo/$(id)) || resource.data.uid == request.auth.uid || esAdmin());
+      allow list: if activo() && (resource.data.uid == request.auth.uid || esAdmin());
+      allow create: if activo() && demoValida();
+      allow update: if activo() && (
+        (resource.data.uid == request.auth.uid && resource.data.estado == 'rechazado' && demoValida())
+        || (esAdmin() && resource.data.simulado == true
+          && resource.data.metodo == 'Transferencia demo' && resource.data.estado == 'en_revision'
+          && request.resource.data.estado in ['aprobado','rechazado']
+          && request.resource.data.resueltoAt == request.time
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado','resueltoAt']))
+      );
+      allow delete: if false;
+    }
+
+    match /pagos/{id} {
+      allow read: if activo() && (resource.data.uid == request.auth.uid || esAdmin());
+      allow write: if false;
+    }
+
+    match /solicitudesPago/{id} {
+      allow read: if activo() && (resource.data.uid == request.auth.uid || esAdmin());
+      allow write: if false;
+    }
+
+    match /multas/{id} {
+      allow read: if activo() && (resource.data.uid == request.auth.uid || esAdmin());
+      allow create: if esAdmin();
+      allow delete: if esAdmin();
+      allow update: if activo() && (
+        esAdmin()
+        || (resource.data.uid == request.auth.uid
+            && resource.data.estado == 'pendiente'
+            && request.resource.data.estado == 'pagada'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado', 'fechaPago', 'comprobante', 'pagadoEn']))
+      );
+    }
+  }
+}

@@ -1,0 +1,33 @@
+<ion-content [fullscreen]="true" class="wp-content">
+  <div class="wp-wrap">
+    <div class="wp-banner">DEMOSTRACIÓN ACADÉMICA · Sin cobros reales</div>
+    <div class="wp-card">
+      <div class="wp-logo"><span class="wp-tb">HabitApp</span><span class="wp-wp">Simulador de pagos</span></div>
+      <p class="wp-nota">Este simulador no se conecta a Transbank. No solicita tarjetas ni emite autorizaciones bancarias.</p>
+      @if (estado === 'cargando') { <p role="status">Cargando el cobro…</p> }
+      @if (concepto; as c) {
+        <div class="wp-resumen">
+          <div><span>Concepto</span><strong>{{ c.concepto }}</strong></div>
+          <div><span>Período</span><strong>{{ c.mes || 'Multa seleccionada' }}</strong></div>
+          <div class="wp-total"><span>Monto de prueba</span><strong>${{ fmt(c.monto) }}</strong></div>
+        </div>
+      }
+      @if (error) { <p class="wp-error" role="alert">{{ error }}</p> }
+      @if (estado === 'form' || estado === 'procesando') {
+        <button class="wp-pagar" type="button" (click)="pagar(true)" [disabled]="estado === 'procesando'">{{ estado === 'procesando' ? 'Guardando…' : 'Simular aprobación' }}</button>
+        <button class="wp-link" type="button" (click)="pagar(false)" [disabled]="estado === 'procesando'">Simular rechazo</button>
+      }
+      @if (estado === 'resultado' && resultado; as r) {
+        <h1>Resultado: {{ r.estado === 'aprobado' ? 'aprobado (simulado)' : r.estado === 'rechazado' ? 'rechazado (simulado)' : 'en revisión' }}</h1>
+        <p>Registro compartido con administración. No modifica deudas ni ingresos reales.</p>
+        <div class="wp-lineas">
+          <div><span>Comprobante demo</span><strong>{{ r.comprobante }}</strong></div>
+          <div><span>Método</span><strong>{{ r.metodo }}</strong></div>
+        </div>
+        @if (r.estado === 'rechazado') { <button class="wp-pagar" type="button" (click)="reintentar()">Reintentar demostración</button> }
+        <button class="wp-link no-print" type="button" (click)="imprimir()">Imprimir comprobante de demostración</button>
+      }
+      <button class="wp-link gris no-print" type="button" (click)="volver()" [disabled]="estado === 'procesando'">Volver a HabitApp</button>
+    </div>
+  </div>
+</ion-content>

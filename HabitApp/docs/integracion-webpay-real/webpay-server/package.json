@@ -1,0 +1,17 @@
+{
+  "name": "habitapp-webpay",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "firebase-admin": "13.10.0",
+    "nodemailer": "10.5.0",
+    "transbank-sdk": "6.1.1"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

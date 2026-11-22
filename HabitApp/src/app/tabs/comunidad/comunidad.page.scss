@@ -1,0 +1,199 @@
+.community-post .post-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  .act-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 4px;
+    background: transparent;
+    border: 0;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.15s ease;
+
+    svg { width: 20px; height: 20px; flex-shrink: 0; }
+    &:active { transform: scale(0.92); }
+  }
+
+  .share-button { margin-left: auto; }
+  .like-btn.liked { color: #ef4444; }
+  .like-btn.pop svg { animation: corazonPop 0.45s ease; }
+}
+
+@keyframes corazonPop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.45); }
+  60%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+.cm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  animation: cmFade 0.2s ease;
+}
+
+.cm-sheet {
+  width: 100%;
+  max-width: 520px;
+  height: 78vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+  animation: cmUp 0.25s ease;
+}
+
+.cm-handle {
+  width: 40px; height: 4px;
+  margin: 10px auto 0;
+  border-radius: 4px;
+  background: #d1d5db;
+}
+
+.cm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px 8px;
+
+  strong { display: block; font-size: 17px; color: #111827; }
+  span { font-size: 12px; color: #9ca3af; }
+}
+
+.cm-close {
+  width: 34px; height: 34px;
+  border: 0; border-radius: 50%;
+  background: #f3f4f6; color: #374151;
+  font-size: 22px; line-height: 1; cursor: pointer;
+}
+
+.cm-post-resumen {
+  margin: 0 20px 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid #f0f1f3;
+
+  strong {
+    display: block; font-size: 13px; color: #374151;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+}
+
+.cm-lista {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cm-estado {
+  margin: auto;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+
+  .cm-estado-icono { font-size: 32px; }
+  p { margin: 8px 0 0; line-height: 1.5; }
+}
+
+.cm-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  animation: cmFade 0.2s ease;
+}
+
+.cm-avatar {
+  width: 34px; height: 34px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  color: #fff; font-size: 12px; font-weight: 700;
+}
+
+.cm-contenido {
+  min-width: 0;
+  max-width: calc(100% - 44px);
+
+  small { display: block; margin: 3px 0 0 10px; font-size: 11px; color: #9ca3af; }
+}
+
+.cm-burbuja {
+  padding: 8px 12px;
+  border-radius: 4px 16px 16px 16px;
+  background: #f3f4f6;
+
+  strong { display: block; font-size: 12px; color: #111827; margin-bottom: 2px; }
+  p { margin: 0; font-size: 14px; line-height: 1.4; color: #374151; word-break: break-word; }
+}
+
+.cm-item.mio {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+
+  .cm-burbuja {
+    background: #2563eb;
+    border-radius: 16px 4px 16px 16px;
+    strong { color: rgba(255, 255, 255, 0.85); }
+    p { color: #fff; }
+  }
+
+  small { text-align: right; margin: 3px 10px 0 0; }
+}
+
+.cm-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #eef0f3;
+  background: #fff;
+
+  input {
+    flex: 1; min-width: 0;
+    padding: 11px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 24px;
+    background: #f9fafb; color: #111827;
+    font-family: inherit; font-size: 14px; outline: none;
+    &:focus { border-color: #93c5fd; background: #fff; }
+  }
+}
+
+.cm-enviar {
+  width: 42px; height: 42px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%;
+  background: #2563eb; color: #fff; cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  svg { width: 19px; height: 19px; }
+  &:active { transform: scale(0.92); }
+  &:disabled { background: #cbd5e1; cursor: default; }
+}
+
+@keyframes cmUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes cmFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

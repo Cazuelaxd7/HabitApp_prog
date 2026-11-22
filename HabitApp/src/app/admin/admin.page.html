@@ -107,11 +107,11 @@
               </article>
               <article class="stat-card">
                 <div class="stat-icon payments-icon">$</div>
-                <div class="stat-content"><span>Gastos comunes cobrados</span><strong>{{ porcentaje() }}%</strong><small>{{ mes }}</small></div>
+                <div class="stat-content"><span>Gastos comunes cobrados</span><strong>{{ porcentaje() }}%</strong><small>{{ etiquetaPeriodo() }}</small></div>
               </article>
               <article class="stat-card">
                 <div class="stat-icon fines-icon">!</div>
-                <div class="stat-content"><span>Pagos pendientes</span><strong>{{ pendientes() }}</strong><small>Por cobrar</small></div>
+                <div class="stat-content"><span>Pagos pendientes</span><strong>{{ pendientes() }}</strong><small>{{ etiquetaPeriodo() }}</small></div>
               </article>
               <article class="stat-card">
                 <div class="stat-icon reservations-icon">□</div>
@@ -122,30 +122,96 @@
             <!-- Ingresos y egresos -->
             <article class="panel fin-panel">
               <div class="panel-header">
-                <div><span class="eyebrow">FINANZAS</span><h2>Ingresos y egresos del condominio</h2></div>
-                <button class="text-button" (click)="ir('egresos')">Registrar egreso</button>
+                <div>
+                  <span class="eyebrow">FINANZAS</span>
+                  <h2>Ingresos y egresos del condominio</h2>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
+                    Mes de consulta
+                    <input
+                      type="month"
+                      aria-label="Seleccionar mes financiero"
+                      [value]="periodoSeleccionado()"
+                      (change)="cambiarPeriodo($any($event.target).value)"
+                      style="padding:9px;border:1px solid #d1d5db;border-radius:8px;background:white;"
+                    >
+                  </label>
+
+                  <button class="text-button" type="button" (click)="ir('egresos')">
+                    Registrar egreso
+                  </button>
+                </div>
               </div>
 
               <div class="fin-resumen">
-                <div class="fin-card ing"><span>Ingresos del mes</span><strong>&#36;{{ fmtMonto(finMes().ingresos) }}</strong><small>Gastos + multas + reservas</small></div>
-                <div class="fin-card egr"><span>Egresos del mes</span><strong>&#36;{{ fmtMonto(finMes().egresos) }}</strong><small>Gastos del condominio</small></div>
-                <div class="fin-card bal" [class.neg]="finMes().balance < 0"><span>Balance del mes</span><strong>{{ finMes().balance < 0 ? '-' : '' }}&#36;{{ fmtMonto(finMes().balance < 0 ? -finMes().balance : finMes().balance) }}</strong><small>Ingresos menos egresos</small></div>
-                <div class="fin-card caja" [class.neg]="saldoCaja() < 0"><span>Saldo acumulado</span><strong>{{ saldoCaja() < 0 ? '-' : '' }}&#36;{{ fmtMonto(saldoCaja() < 0 ? -saldoCaja() : saldoCaja()) }}</strong><small>Todo el historial</small></div>
+                <div class="fin-card ing">
+                  <span>Ingresos del período</span>
+                  <strong>&#36;{{ fmtMonto(finMes().ingresos) }}</strong>
+                  <small>Ingresos recibidos</small>
+                </div>
+
+                <div class="fin-card egr">
+                  <span>Egresos del período</span>
+                  <strong>&#36;{{ fmtMonto(finMes().egresos) }}</strong>
+                  <small>Gastos registrados</small>
+                </div>
+
+                <div class="fin-card bal" [class.neg]="finMes().balance < 0">
+                  <span>Balance del período</span>
+                  <strong>{{ finMes().balance < 0 ? '-' : '' }}&#36;{{ fmtMonto(finMes().balance < 0 ? -finMes().balance : finMes().balance) }}</strong>
+                  <small>Ingresos menos egresos</small>
+                </div>
+
+                <div class="fin-card caja" [class.neg]="saldoCaja() < 0">
+                  <span>Saldo acumulado</span>
+                  <strong>{{ saldoCaja() < 0 ? '-' : '' }}&#36;{{ fmtMonto(saldoCaja() < 0 ? -saldoCaja() : saldoCaja()) }}</strong>
+                  <small>Todo el historial</small>
+                </div>
               </div>
 
               <div class="rec-detalle">
-                <div class="rec-titulo">Recaudación de {{ mes }}</div>
-                <div><span>Gastos comunes</span><b>&#36;{{ fmtMonto(recaudacionMes().gastos) }}</b></div>
-                <div><span>Multas cobradas</span><b>&#36;{{ fmtMonto(recaudacionMes().multas) }}</b></div>
-                <div><span>Reservas cobradas</span><b>&#36;{{ fmtMonto(recaudacionMes().reservas) }}</b></div>
-                <div class="rec-total"><span>Total recaudado</span><b>&#36;{{ fmtMonto(recaudacionMes().total) }}</b></div>
-                <div class="rec-pend"><span>Por cobrar (gastos + multas + reservas)</span><b>&#36;{{ fmtMonto(porCobrarTotal()) }}</b></div>
+                <div class="rec-titulo">
+                  Ingresos recibidos en {{ etiquetaPeriodo() }}
+                </div>
+
+                <div>
+                  <span>Gastos comunes</span>
+                  <b>&#36;{{ fmtMonto(recaudacionMes().gastos) }}</b>
+                </div>
+
+                <div>
+                  <span>Fondo de reserva</span>
+                  <b>&#36;{{ fmtMonto(recaudacionMes().fondoReserva) }}</b>
+                </div>
+
+                <div>
+                  <span>Multas cobradas</span>
+                  <b>&#36;{{ fmtMonto(recaudacionMes().multas) }}</b>
+                </div>
+
+                <div>
+                  <span>Reservas cobradas</span>
+                  <b>&#36;{{ fmtMonto(recaudacionMes().reservas) }}</b>
+                </div>
+
+                <div class="rec-total">
+                  <span>Total recaudado</span>
+                  <b>&#36;{{ fmtMonto(recaudacionMes().total) }}</b>
+                </div>
+
+                <div class="rec-pend">
+                  <span>Por cobrar del período</span>
+                  <b>&#36;{{ fmtMonto(porCobrarTotal()) }}</b>
+                </div>
               </div>
 
               <div class="fin-leyenda">
                 <span><i class="pt ing"></i>Ingresos</span>
                 <span><i class="pt egr"></i>Egresos</span>
               </div>
+
               <div class="fin-chart">
                 @for (f of serieFinanzas(); track f.clave) {
                   <div class="fin-col">
@@ -162,25 +228,39 @@
             <div class="dashboard-grid">
               <article class="panel payments-panel">
                 <div class="panel-header">
-                  <div><span class="eyebrow">GASTOS COMUNES</span><h2>Estado de pagos</h2></div>
+                  <div>
+                    <span class="eyebrow">GASTOS COMUNES</span>
+                    <h2>Estado de pagos</h2>
+                    <small>{{ etiquetaPeriodo() }}</small>
+                  </div>
                   <button class="text-button" (click)="ir('pagos')">Ver detalle</button>
                 </div>
+
                 <div class="payment-total">
-                  <span>Total recaudado (mes)</span>
+                  <span>Total aplicado a cuotas del período</span>
                   <strong>&#36;{{ fmtMonto(totalRecaudado()) }}</strong>
                 </div>
+
                 <div class="payment-progress">
-                  <div class="progress-header"><span>Recaudación mensual</span><strong>{{ porcentaje() }}%</strong></div>
-                  <div class="progress-bar"><div class="progress-fill" [style.width.%]="porcentaje() > 100 ? 100 : porcentaje()"></div></div>
+                  <div class="progress-header">
+                    <span>Recaudación mensual</span>
+                    <strong>{{ porcentaje() }}%</strong>
+                  </div>
+
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="porcentaje() > 100 ? 100 : porcentaje()"></div>
+                  </div>
+
                   <div class="progress-footer">
                     <span>Pagado: &#36;{{ fmtMonto(totalRecaudado()) }}</span>
                     <span>Pendiente: &#36;{{ fmtMonto(montoPendiente()) }}</span>
                   </div>
                 </div>
+
                 <div class="payment-mini-grid">
-                  <div><span>Pagados</span><strong>{{ pagadosResidentes() }}</strong></div>
+                  <div><span>Cuotas completas</span><strong>{{ pagadosResidentes() }}</strong></div>
+                  <div><span>Parciales</span><strong>{{ pagosParciales() }}</strong></div>
                   <div><span>Pendientes</span><strong>{{ pendientes() }}</strong></div>
-                  <div><span>Residentes</span><strong>{{ residentes().length }}</strong></div>
                 </div>
               </article>
 
@@ -188,11 +268,15 @@
                 <div class="panel-header">
                   <div><span class="eyebrow">ACTIVIDAD</span><h2>Actividad reciente</h2></div>
                 </div>
+
                 <div class="activity-list">
                   @for (a of actividad(); track $index) {
                     <div class="activity-item">
                       <div class="activity-avatar">{{ a.icono }}</div>
-                      <div class="activity-text"><strong>{{ a.titulo }}</strong><span>{{ a.texto }}</span></div>
+                      <div class="activity-text">
+                        <strong>{{ a.titulo }}</strong>
+                        <span>{{ a.texto }}</span>
+                      </div>
                       <small>{{ tiempoRelativo(a.ts) }}</small>
                     </div>
                   } @empty {
@@ -208,11 +292,18 @@
                   <div><span class="eyebrow">RESERVAS</span><h2>Próximas reservas</h2></div>
                   <button class="text-button" (click)="ir('reservas')">Ver todas</button>
                 </div>
+
                 <div class="reservation-list">
                   @for (r of reservasProximas().slice(0, 4); track r.id) {
                     <div class="admin-reservation">
-                      <div class="reservation-date"><strong>{{ diaMes(r.fecha).d }}</strong><span>{{ diaMes(r.fecha).m }}</span></div>
-                      <div class="reservation-info"><strong>{{ r.espacio }}</strong><span>{{ nombreDe(r.uid) }} · {{ r.horario }}</span></div>
+                      <div class="reservation-date">
+                        <strong>{{ diaMes(r.fecha).d }}</strong>
+                        <span>{{ diaMes(r.fecha).m }}</span>
+                      </div>
+                      <div class="reservation-info">
+                        <strong>{{ r.espacio }}</strong>
+                        <span>{{ nombreDe(r.uid) }} · {{ r.horario }}</span>
+                      </div>
                       <span class="status-badge confirmed">Confirmada</span>
                     </div>
                   } @empty {
@@ -226,11 +317,15 @@
                   <div><span class="eyebrow">COMUNIDAD</span><h2>Avisos importantes</h2></div>
                   <button class="text-button" (click)="ir('avisos')">Gestionar</button>
                 </div>
+
                 <div class="notice-list">
                   @for (p of avisos().slice(0, 3); track p.id) {
                     <div class="notice-item">
                       <div class="notice-icon">!</div>
-                      <div><strong>{{ p.title }}</strong><span>{{ (p.body || '').slice(0, 60) }}</span></div>
+                      <div>
+                        <strong>{{ p.title }}</strong>
+                        <span>{{ (p.body || '').slice(0, 60) }}</span>
+                      </div>
                     </div>
                   } @empty {
                     <div class="table-empty-state">No hay avisos publicados.</div>
@@ -251,28 +346,47 @@
                 <p>Verifica a los nuevos residentes y administra los permisos.</p>
               </div>
             </div>
+
             <div class="panel">
               <div class="table-toolbar">
                 <div class="table-search">
                   <span>⌕</span>
-                  <input type="text" placeholder="Buscar residente..." [value]="busqueda()" (input)="busqueda.set($any($event.target).value)">
+                  <input
+                    type="text"
+                    placeholder="Buscar residente..."
+                    [value]="busqueda()"
+                    (input)="busqueda.set($any($event.target).value)"
+                  >
                 </div>
               </div>
+
               <div class="table-wrapper">
                 <table>
                   <thead>
-                    <tr><th>Residente</th><th>Depto</th><th>Verificación</th><th>Gastos comunes (mes)</th><th></th></tr>
+                    <tr>
+                      <th>Residente</th>
+                      <th>Depto</th>
+                      <th>Verificación</th>
+                      <th>Gastos comunes (mes)</th>
+                      <th></th>
+                    </tr>
                   </thead>
+
                   <tbody>
                     @for (u of residentesFiltrados(); track u.uid) {
                       <tr>
                         <td>
                           <div class="resident-cell">
                             <div class="table-avatar">{{ iniciales(u.nombre) }}</div>
-                            <div><strong>{{ u.nombre || 'Sin nombre' }}</strong><span>{{ u.correo }}</span></div>
+                            <div>
+                              <strong>{{ u.nombre || 'Sin nombre' }}</strong>
+                              <span>{{ u.correo }}</span>
+                            </div>
                           </div>
                         </td>
+
                         <td>{{ u.torre ? 'Torre ' + u.torre + ' · ' : '' }}{{ u.depto || '—' }}</td>
+
                         <td>
                           @if (u.estado === 'pendiente') {
                             <span class="status-badge pending">Pendiente</span>
@@ -280,9 +394,15 @@
                             <span class="status-badge confirmed">Verificado</span>
                           }
                         </td>
+
                         <td>
-                          @if (yaPago(u.uid)) { <span class="paid-text">Pagado</span> } @else { <span class="pending-text">Pendiente</span> }
+                          @if (yaPago(u.uid)) {
+                            <span class="paid-text">Pagado</span>
+                          } @else {
+                            <span class="pending-text">Pendiente</span>
+                          }
                         </td>
+
                         <td>
                           <div class="acciones-multa">
                             @if (u.estado === 'pendiente') {
@@ -293,7 +413,9 @@
                         </td>
                       </tr>
                     } @empty {
-                      <tr><td colspan="5" class="table-empty-state">No hay residentes registrados aún.</td></tr>
+                      <tr>
+                        <td colspan="5" class="table-empty-state">No hay residentes registrados aún.</td>
+                      </tr>
                     }
                   </tbody>
                 </table>
@@ -306,18 +428,40 @@
         @case ('pagos') {
           <section class="panel" [hidden]="transferencias().length === 0">
             <h2>Transferencias por conciliar</h2>
+
             @for (solicitud of transferencias(); track solicitud.id) {
-              <p>{{ nombreDe(solicitud.uid) }} · {{ solicitud.mes }} ·
-                ${{ fmtMonto(solicitud.monto) }} · Ref. {{ solicitud.referencia }}</p>
-              <p>Destino registrado: {{ solicitud.cuentaDestino?.banco }} · {{ solicitud.cuentaDestino?.cuenta }}</p>
-              <button class="table-action" type="button" [disabled]="conciliando()"
-                (click)="resolverTransferencia(solicitud, true)">Confirmar abono</button>
-              <button class="table-action" type="button" [disabled]="conciliando()"
-                (click)="resolverTransferencia(solicitud, false)">Rechazar</button>
+              <p>
+                {{ nombreDe(solicitud.uid) }} · {{ solicitud.mes }} ·
+                ${{ fmtMonto(solicitud.monto) }} · Ref. {{ solicitud.referencia }}
+              </p>
+
+              <p>
+                Destino registrado: {{ solicitud.cuentaDestino?.banco }} ·
+                {{ solicitud.cuentaDestino?.cuenta }}
+              </p>
+
+              <button
+                class="table-action"
+                type="button"
+                [disabled]="conciliando()"
+                (click)="resolverTransferencia(solicitud, true)"
+              >
+                Confirmar abono
+              </button>
+
+              <button
+                class="table-action"
+                type="button"
+                [disabled]="conciliando()"
+                (click)="resolverTransferencia(solicitud, false)"
+              >
+                Rechazar
+              </button>
             } @empty {
               <p>No hay transferencias por conciliar.</p>
             }
           </section>
+
           <section class="screen active">
             <div class="page-header">
               <div>
@@ -326,22 +470,62 @@
                 <p>Controla los pagos y la recaudación del condominio.</p>
               </div>
             </div>
+
             <div class="stats-grid">
               <article class="stat-card">
                 <div class="stat-icon payments-icon">$</div>
-                <div class="stat-content"><span>Total pagado</span><strong>&#36;{{ fmtMonto(totalRecaudado()) }}</strong><small>{{ porcentaje() }}% recaudado</small></div>
+                <div class="stat-content">
+                  <span>Total pagado</span>
+                  <strong>&#36;{{ fmtMonto(totalRecaudado()) }}</strong>
+                  <small>{{ porcentaje() }}% recaudado · {{ etiquetaPeriodo() }}</small>
+                </div>
               </article>
+
               <article class="stat-card">
                 <div class="stat-icon fines-icon">!</div>
-                <div class="stat-content"><span>Pendiente</span><strong>{{ pendientes() }}</strong><small>residentes</small></div>
+                <div class="stat-content">
+                  <span>Pendiente</span>
+                  <strong>{{ pendientes() }}</strong>
+                  <small>residentes · {{ etiquetaPeriodo() }}</small>
+                </div>
+              </article>
+
+              <article class="stat-card">
+                <div class="stat-icon residents-icon">≈</div>
+                <div class="stat-content">
+                  <span>Pagos parciales</span>
+                  <strong>{{ pagosParciales() }}</strong>
+                  <small>{{ etiquetaPeriodo() }}</small>
+                </div>
               </article>
             </div>
+
             <div class="panel">
-              <div class="panel-header"><div><span class="eyebrow">HISTORIAL</span><h2>Historial de pagos</h2></div></div>
-              @if (errorDemo()) { <p role="alert">{{ errorDemo() }}</p> }
+              <div class="panel-header">
+                <div>
+                  <span class="eyebrow">HISTORIAL</span>
+                  <h2>Historial de pagos</h2>
+                </div>
+              </div>
+
+              @if (errorDemo()) {
+                <p role="alert">{{ errorDemo() }}</p>
+              }
+
               <div class="table-wrapper">
                 <table>
-                  <thead><tr><th>Residente</th><th>Mes</th><th>Monto</th><th>Método</th><th>Comprobante</th><th>Estado</th><th>Acción</th></tr></thead>
+                  <thead>
+                    <tr>
+                      <th>Residente</th>
+                      <th>Mes</th>
+                      <th>Monto</th>
+                      <th>Método</th>
+                      <th>Comprobante</th>
+                      <th>Estado</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+
                   <tbody>
                     @for (p of historialPagos(); track p.id) {
                       <tr>
@@ -349,17 +533,55 @@
                         <td>{{ p.mes || '—' }}</td>
                         <td>&#36;{{ fmtMonto(p.monto) }}</td>
                         <td>{{ p.metodo || '—' }}</td>
-                        <td><b class="pago-codigo" [title]="p.comprobante || ''">{{ p.comprobante || '—' }}</b>
-                          @if (p.referencia) { <small class="pago-referencia">Ref. {{ p.referencia }}</small> }
+                        <td>
+                          <b class="pago-codigo" [title]="p.comprobante || ''">
+                            {{ p.comprobante || '—' }}
+                          </b>
+
+                          @if (p.referencia) {
+                            <small class="pago-referencia">Ref. {{ p.referencia }}</small>
+                          }
                         </td>
-                        <td><span class="status-badge" [class.confirmed]="p.estado === 'aprobado'" [class.payment-review]="p.estado === 'en_revision'" [class.payment-rejected]="p.estado === 'rechazado'">{{ p.estado === 'aprobado' ? 'Pagado' : p.estado === 'en_revision' ? 'En revisión' : 'Rechazado' }}</span></td>
-                        <td>@if (p.estado === 'en_revision' && p.simulado) {
-                          <button class="table-action" type="button" [disabled]="resolviendoDemo()" (click)="resolverDemo(p, true)">Aprobar</button>
-                          <button class="table-action" type="button" [disabled]="resolviendoDemo()" (click)="resolverDemo(p, false)">Rechazar</button>
-                        } @else { — }</td>
+
+                        <td>
+                          <span
+                            class="status-badge"
+                            [class.confirmed]="p.estado === 'aprobado'"
+                            [class.payment-review]="p.estado === 'en_revision'"
+                            [class.payment-rejected]="p.estado === 'rechazado'"
+                          >
+                            {{ p.estado === 'aprobado' ? 'Pagado' : p.estado === 'en_revision' ? 'En revisión' : p.estado === 'rechazado' ? 'Rechazado' : 'Pendiente' }}
+                          </span>
+                        </td>
+
+                        <td>
+                          @if (p.estado === 'en_revision' && p.simulado) {
+                            <button
+                              class="table-action"
+                              type="button"
+                              [disabled]="resolviendoDemo()"
+                              (click)="resolverDemo(p, true)"
+                            >
+                              Aprobar
+                            </button>
+
+                            <button
+                              class="table-action"
+                              type="button"
+                              [disabled]="resolviendoDemo()"
+                              (click)="resolverDemo(p, false)"
+                            >
+                              Rechazar
+                            </button>
+                          } @else {
+                            —
+                          }
+                        </td>
                       </tr>
                     } @empty {
-                      <tr><td colspan="7" class="table-empty-state">Aún no hay pagos registrados.</td></tr>
+                      <tr>
+                        <td colspan="7" class="table-empty-state">Aún no hay pagos registrados.</td>
+                      </tr>
                     }
                   </tbody>
                 </table>
@@ -377,73 +599,157 @@
                 <h1>Egresos</h1>
                 <p>Registra los gastos del condominio (mantención, sueldos, cuentas, etc.).</p>
               </div>
+
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
+                  Período
+                  <input
+                    type="month"
+                    aria-label="Seleccionar período de egresos"
+                    [value]="periodoSeleccionado()"
+                    (change)="cambiarPeriodo($any($event.target).value)"
+                    style="padding:9px;border:1px solid #d1d5db;border-radius:8px;background:white;"
+                  >
+                </label>
+
+                <button
+                  class="primary-button"
+                  type="button"
+                  (click)="generarReporteFinanciero()"
+                >
+                  Generar reporte financiero
+                </button>
+              </div>
             </div>
 
             <div class="stats-grid">
               <article class="stat-card">
                 <div class="stat-icon fines-icon">↧</div>
-                <div class="stat-content"><span>Egresos del mes</span><strong>&#36;{{ fmtMonto(finMes().egresos) }}</strong><small>{{ mes }}</small></div>
+                <div class="stat-content">
+                  <span>Egresos del período</span>
+                  <strong>&#36;{{ fmtMonto(finMes().egresos) }}</strong>
+                  <small>{{ etiquetaPeriodo() }}</small>
+                </div>
               </article>
+
               <article class="stat-card">
                 <div class="stat-icon payments-icon">$</div>
-                <div class="stat-content"><span>Ingresos del mes</span><strong>&#36;{{ fmtMonto(finMes().ingresos) }}</strong><small>{{ mes }}</small></div>
+                <div class="stat-content">
+                  <span>Ingresos del período</span>
+                  <strong>&#36;{{ fmtMonto(finMes().ingresos) }}</strong>
+                  <small>{{ etiquetaPeriodo() }}</small>
+                </div>
               </article>
+
               <article class="stat-card">
                 <div class="stat-icon residents-icon">=</div>
-                <div class="stat-content"><span>Balance del mes</span><strong>{{ finMes().balance < 0 ? '-' : '' }}&#36;{{ fmtMonto(finMes().balance < 0 ? -finMes().balance : finMes().balance) }}</strong><small>Ingresos menos egresos</small></div>
+                <div class="stat-content">
+                  <span>Balance del período</span>
+                  <strong>{{ finMes().balance < 0 ? '-' : '' }}&#36;{{ fmtMonto(finMes().balance < 0 ? -finMes().balance : finMes().balance) }}</strong>
+                  <small>Ingresos menos egresos</small>
+                </div>
               </article>
             </div>
 
             <div class="dashboard-bottom-grid">
               <article class="panel new-post-panel">
-                <div class="panel-header"><div><span class="eyebrow">NUEVO</span><h2>Registrar egreso</h2></div></div>
+                <div class="panel-header">
+                  <div><span class="eyebrow">NUEVO</span><h2>Registrar egreso</h2></div>
+                </div>
 
-                <input type="text" placeholder="Concepto (ej: Pago de electricidad áreas comunes)"
-                       [value]="eConcepto()" (input)="eConcepto.set($any($event.target).value)">
+                <input
+                  type="text"
+                  placeholder="Concepto (ej: Pago de electricidad áreas comunes)"
+                  [value]="eConcepto()"
+                  (input)="eConcepto.set($any($event.target).value)"
+                >
 
-                <select class="multa-select" (change)="eCategoria.set($any($event.target).value)">
+                <select
+                  class="multa-select"
+                  (change)="eCategoria.set($any($event.target).value)"
+                >
                   @for (c of categoriasEgreso; track c) {
                     <option [value]="c" [selected]="eCategoria() === c">{{ c }}</option>
                   }
                 </select>
 
-                <input type="number" min="1" placeholder="Monto en pesos"
-                       [value]="eMonto()" (input)="eMonto.set($any($event.target).value)">
-                <input type="date" [value]="eFecha()" (input)="eFecha.set($any($event.target).value)">
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="Monto en pesos"
+                  [value]="eMonto()"
+                  (input)="eMonto.set($any($event.target).value)"
+                >
+
+                <input
+                  type="date"
+                  [value]="eFecha()"
+                  (input)="eFecha.set($any($event.target).value)"
+                >
 
                 <button class="primary-button" (click)="crearEgreso()">Registrar egreso</button>
               </article>
 
               <article class="panel">
-                <div class="panel-header"><div><span class="eyebrow">{{ mes.toUpperCase() }}</span><h2>Egresos por categoría</h2></div></div>
+                <div class="panel-header">
+                  <div>
+                    <span class="eyebrow">{{ etiquetaPeriodo().toUpperCase() }}</span>
+                    <h2>Egresos por categoría</h2>
+                  </div>
+                </div>
+
                 @for (c of egresosPorCategoria(); track c.categoria) {
                   <div class="barra-fila">
                     <span class="barra-mes">{{ c.categoria }}</span>
-                    <div class="report-bar barra-fina"><span class="barra-roja" [style.width.%]="c.pct"></span></div>
+                    <div class="report-bar barra-fina">
+                      <span class="barra-roja" [style.width.%]="c.pct"></span>
+                    </div>
                     <b>&#36;{{ fmtMonto(c.total) }}</b>
                   </div>
                 } @empty {
-                  <div class="table-empty-state">Aún no hay egresos este mes.</div>
+                  <div class="table-empty-state">Aún no hay egresos en este período.</div>
                 }
               </article>
             </div>
 
             <div class="panel">
-              <div class="panel-header"><div><span class="eyebrow">HISTORIAL</span><h2>Egresos registrados</h2></div></div>
+              <div class="panel-header">
+                <div>
+                  <span class="eyebrow">HISTORIAL</span>
+                  <h2>Egresos de {{ etiquetaPeriodo() }}</h2>
+                  <small>{{ egresosPeriodo().length }} registro(s) en el período seleccionado</small>
+                </div>
+              </div>
+
               <div class="table-wrapper">
                 <table>
-                  <thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Monto</th><th></th></tr></thead>
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Concepto</th>
+                      <th>Categoría</th>
+                      <th>Monto</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+
                   <tbody>
-                    @for (e of egresosOrdenados(); track e.id) {
+                    @for (e of egresosPeriodo(); track e.id) {
                       <tr>
                         <td>{{ fmtFecha(e.fecha) }}</td>
                         <td>{{ e.concepto }}</td>
                         <td>{{ e.categoria }}</td>
                         <td>&#36;{{ fmtMonto(e.monto) }}</td>
-                        <td><button class="table-action" (click)="eliminarEgreso(e.id)">Eliminar</button></td>
+                        <td>
+                          <button class="table-action" (click)="eliminarEgreso(e.id)">Eliminar</button>
+                        </td>
                       </tr>
                     } @empty {
-                      <tr><td colspan="5" class="table-empty-state">Aún no hay egresos registrados.</td></tr>
+                      <tr>
+                        <td colspan="5" class="table-empty-state">
+                          No hay egresos registrados en {{ etiquetaPeriodo() }}.
+                        </td>
+                      </tr>
                     }
                   </tbody>
                 </table>
@@ -466,19 +772,34 @@
             <div class="stats-grid">
               <article class="stat-card">
                 <div class="stat-icon fines-icon">!</div>
-                <div class="stat-content"><span>Multas pendientes</span><strong>{{ multasPendientes().length }}</strong><small>por cobrar</small></div>
+                <div class="stat-content">
+                  <span>Multas pendientes</span>
+                  <strong>{{ multasPendientes().length }}</strong>
+                  <small>por cobrar</small>
+                </div>
               </article>
+
               <article class="stat-card">
                 <div class="stat-icon payments-icon">$</div>
-                <div class="stat-content"><span>Monto pendiente</span><strong>&#36;{{ fmtMonto(totalMultasPendientes()) }}</strong><small>en multas</small></div>
+                <div class="stat-content">
+                  <span>Monto pendiente</span>
+                  <strong>&#36;{{ fmtMonto(totalMultasPendientes()) }}</strong>
+                  <small>en multas</small>
+                </div>
               </article>
             </div>
 
             <div class="panel new-post-panel">
-              <div class="panel-header"><div><span class="eyebrow">NUEVA</span><h2>Crear multa</h2></div></div>
+              <div class="panel-header">
+                <div><span class="eyebrow">NUEVA</span><h2>Crear multa</h2></div>
+              </div>
 
-              <select class="multa-select" (change)="mUid.set($any($event.target).value)">
+              <select
+                class="multa-select"
+                (change)="mUid.set($any($event.target).value)"
+              >
                 <option value="" [selected]="!mUid()">Selecciona un residente</option>
+
                 @for (u of residentes(); track u.uid) {
                   <option [value]="u.uid" [selected]="mUid() === u.uid">
                     {{ u.nombre || u.correo }}{{ u.depto ? ' · ' + u.depto : '' }}
@@ -486,22 +807,48 @@
                 }
               </select>
 
-              <input type="text" placeholder="Motivo (ej: Ruido después de las 23:00)"
-                     [value]="mMotivo()" (input)="mMotivo.set($any($event.target).value)">
-              <input type="number" min="1" placeholder="Monto en pesos (ej: 25000)"
-                     [value]="mMonto()" (input)="mMonto.set($any($event.target).value)">
-              <input type="date" [value]="mFecha()" (input)="mFecha.set($any($event.target).value)">
+              <input
+                type="text"
+                placeholder="Motivo (ej: Ruido después de las 23:00)"
+                [value]="mMotivo()"
+                (input)="mMotivo.set($any($event.target).value)"
+              >
+
+              <input
+                type="number"
+                min="1"
+                placeholder="Monto en pesos (ej: 25000)"
+                [value]="mMonto()"
+                (input)="mMonto.set($any($event.target).value)"
+              >
+
+              <input
+                type="date"
+                [value]="mFecha()"
+                (input)="mFecha.set($any($event.target).value)"
+              >
 
               <button class="primary-button" (click)="crearMulta()">Crear multa</button>
             </div>
 
             <div class="panel">
-              <div class="panel-header"><div><span class="eyebrow">HISTORIAL</span><h2>Multas emitidas</h2></div></div>
+              <div class="panel-header">
+                <div><span class="eyebrow">HISTORIAL</span><h2>Multas emitidas</h2></div>
+              </div>
+
               <div class="table-wrapper">
                 <table>
                   <thead>
-                    <tr><th>Residente</th><th>Motivo</th><th>Monto</th><th>Fecha</th><th>Estado</th><th></th></tr>
+                    <tr>
+                      <th>Residente</th>
+                      <th>Motivo</th>
+                      <th>Monto</th>
+                      <th>Fecha</th>
+                      <th>Estado</th>
+                      <th></th>
+                    </tr>
                   </thead>
+
                   <tbody>
                     @for (m of multasOrdenadas(); track m.id) {
                       <tr>
@@ -511,7 +858,8 @@
                         <td>{{ fmtFecha(m.fecha) }}</td>
                         <td>
                           @if (m.estado === 'pagada') {
-                            <span class="status-badge confirmed">Pagada</span> <small>{{ m.comprobante }}</small>
+                            <span class="status-badge confirmed">Pagada</span>
+                            <small>{{ m.comprobante }}</small>
                           } @else {
                             <span class="status-badge pending">Pendiente</span>
                           }
@@ -526,7 +874,9 @@
                         </td>
                       </tr>
                     } @empty {
-                      <tr><td colspan="6" class="table-empty-state">Aún no hay multas emitidas.</td></tr>
+                      <tr>
+                        <td colspan="6" class="table-empty-state">Aún no hay multas emitidas.</td>
+                      </tr>
                     }
                   </tbody>
                 </table>
@@ -549,51 +899,121 @@
             <div class="stats-grid">
               <article class="stat-card">
                 <div class="stat-icon reservations-icon">□</div>
-                <div class="stat-content"><span>Reservas hoy</span><strong>{{ reservasHoy().length }}</strong><small>Todos los espacios</small></div>
+                <div class="stat-content">
+                  <span>Reservas hoy</span>
+                  <strong>{{ reservasHoy().length }}</strong>
+                  <small>Todos los espacios</small>
+                </div>
               </article>
+
               <article class="stat-card">
                 <div class="stat-icon residents-icon">▤</div>
-                <div class="stat-content"><span>Reservas próximas</span><strong>{{ reservasProximas().length }}</strong><small>Desde hoy</small></div>
+                <div class="stat-content">
+                  <span>Reservas próximas</span>
+                  <strong>{{ reservasProximas().length }}</strong>
+                  <small>Desde hoy</small>
+                </div>
               </article>
+
               <article class="stat-card">
                 <div class="stat-icon payments-icon">$</div>
-                <div class="stat-content"><span>Cobrado este mes</span><strong>&#36;{{ fmtMonto(recaudacionMes().reservas) }}</strong><small>Reservas pagadas</small></div>
+                <div class="stat-content">
+                  <span>Cobrado este mes</span>
+                  <strong>&#36;{{ fmtMonto(recaudacionMes().reservas) }}</strong>
+                  <small>Reservas pagadas</small>
+                </div>
               </article>
+
               <article class="stat-card">
                 <div class="stat-icon fines-icon">!</div>
-                <div class="stat-content"><span>Por cobrar</span><strong>&#36;{{ fmtMonto(totalReservasPorCobrar()) }}</strong><small>{{ reservasPorCobrar().length }} reserva(s)</small></div>
+                <div class="stat-content">
+                  <span>Por cobrar</span>
+                  <strong>&#36;{{ fmtMonto(totalReservasPorCobrar()) }}</strong>
+                  <small>{{ reservasPorCobrar().length }} reserva(s)</small>
+                </div>
               </article>
             </div>
 
             <div class="panel">
-              <div class="panel-header"><div><span class="eyebrow">ADMINISTRACIÓN</span><h2>Espacios comunes</h2></div></div>
+              <div class="panel-header">
+                <div><span class="eyebrow">ADMINISTRACIÓN</span><h2>Espacios comunes</h2></div>
+              </div>
 
               <div class="esp-form">
-                <input type="text" placeholder="Nombre (ej: Quincho)" [value]="nEspNombre()" (input)="nEspNombre.set($any($event.target).value)">
-                <input type="number" min="0" placeholder="Precio por reserva (0 = gratis)" [value]="nEspPrecio()" (input)="nEspPrecio.set($any($event.target).value)">
-                <input type="text" placeholder="Descripción (opcional)" [value]="nEspDesc()" (input)="nEspDesc.set($any($event.target).value)">
+                <input
+                  type="text"
+                  placeholder="Nombre (ej: Quincho)"
+                  [value]="nEspNombre()"
+                  (input)="nEspNombre.set($any($event.target).value)"
+                >
+
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Precio por reserva (0 = gratis)"
+                  [value]="nEspPrecio()"
+                  (input)="nEspPrecio.set($any($event.target).value)"
+                >
+
+                <input
+                  type="text"
+                  placeholder="Descripción (opcional)"
+                  [value]="nEspDesc()"
+                  (input)="nEspDesc.set($any($event.target).value)"
+                >
+
                 <button class="primary-button" (click)="crearEspacio()">Agregar espacio</button>
               </div>
 
               <div class="table-wrapper">
                 <table>
                   <thead>
-                    <tr><th>Espacio</th><th>Precio por reserva</th><th>Reservas próximas</th><th>Cobrado</th><th>Estado</th><th></th></tr>
+                    <tr>
+                      <th>Espacio</th>
+                      <th>Precio por reserva</th>
+                      <th>Reservas próximas</th>
+                      <th>Cobrado</th>
+                      <th>Estado</th>
+                      <th></th>
+                    </tr>
                   </thead>
+
                   <tbody>
                     @for (e of espaciosDoc(); track e.id) {
                       <tr>
-                        <td><strong>{{ e.nombre }}</strong>@if (e.descripcion) { <br><small>{{ e.descripcion }}</small> }</td>
-                        <td><input class="precio-input" type="number" min="0" [value]="e.precio || 0" (change)="cambiarPrecio(e.id, $any($event.target).value)"></td>
+                        <td>
+                          <strong>{{ e.nombre }}</strong>
+                          @if (e.descripcion) {
+                            <br><small>{{ e.descripcion }}</small>
+                          }
+                        </td>
+
+                        <td>
+                          <input
+                            class="precio-input"
+                            type="number"
+                            min="0"
+                            [value]="e.precio || 0"
+                            (change)="cambiarPrecio(e.id, $any($event.target).value)"
+                          >
+                        </td>
+
                         <td>{{ proximasDeEspacio(e.nombre) }}</td>
                         <td>&#36;{{ fmtMonto(ingresoDeEspacio(e.nombre)) }}</td>
+
                         <td>
-                          @if (e.activo === false) { <span class="status-badge pending">Desactivado</span> }
-                          @else { <span class="status-badge confirmed">Disponible</span> }
+                          @if (e.activo === false) {
+                            <span class="status-badge pending">Desactivado</span>
+                          } @else {
+                            <span class="status-badge confirmed">Disponible</span>
+                          }
                         </td>
+
                         <td>
                           <div class="acciones-multa">
-                            <button class="table-action" (click)="alternarEspacio(e)">{{ e.activo === false ? 'Activar' : 'Desactivar' }}</button>
+                            <button class="table-action" (click)="alternarEspacio(e)">
+                              {{ e.activo === false ? 'Activar' : 'Desactivar' }}
+                            </button>
                             <button class="table-action" (click)="eliminarEspacio(e)">Eliminar</button>
                           </div>
                         </td>
@@ -602,7 +1022,9 @@
                       <tr>
                         <td colspan="6" class="table-empty-state">
                           Aún no hay espacios. Agrega uno arriba o
-                          <button class="text-button" (click)="cargarEspaciosIniciales()">carga Quincho, Sala multiuso y Cancha</button>.
+                          <button class="text-button" (click)="cargarEspaciosIniciales()">
+                            carga Quincho, Sala multiuso y Cancha
+                          </button>.
                         </td>
                       </tr>
                     }
@@ -614,18 +1036,32 @@
             <div class="panel">
               <div class="panel-header">
                 <div><span class="eyebrow">AGENDA</span><h2>Próximas reservas</h2></div>
-                <select class="multa-select filtro-esp" (change)="filtroEsp.set($any($event.target).value)">
+
+                <select
+                  class="multa-select filtro-esp"
+                  (change)="filtroEsp.set($any($event.target).value)"
+                >
                   <option value="" [selected]="!filtroEsp()">Todos los espacios</option>
+
                   @for (n of espacios(); track n) {
                     <option [value]="n" [selected]="filtroEsp() === n">{{ n }}</option>
                   }
                 </select>
               </div>
+
               <div class="table-wrapper">
                 <table>
                   <thead>
-                    <tr><th>Fecha</th><th>Espacio</th><th>Residente</th><th>Horario</th><th>Pago</th><th></th></tr>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Espacio</th>
+                      <th>Residente</th>
+                      <th>Horario</th>
+                      <th>Pago</th>
+                      <th></th>
+                    </tr>
                   </thead>
+
                   <tbody>
                     @for (r of agendaReservas().slice(0, 50); track r.id) {
                       <tr>
@@ -633,17 +1069,34 @@
                         <td><strong>{{ r.espacio }}</strong></td>
                         <td>{{ nombreDe(r.uid) }}</td>
                         <td>{{ r.horario }}</td>
+
                         <td>
                           @switch (estadoPagoReserva(r)) {
-                            @case ('pagada') { <span class="status-badge confirmed">Pagada &#36;{{ fmtMonto(r.monto) }}</span> <small>{{ r.comprobante }}</small> }
-                            @case ('pendiente') { <span class="status-badge pending">Por cobrar &#36;{{ fmtMonto(r.monto) }}</span> }
-                            @default { <span class="status-badge">Sin costo</span> }
+                            @case ('pagada') {
+                              <span class="status-badge confirmed">
+                                Pagada &#36;{{ fmtMonto(r.monto) }}
+                              </span>
+                              <small>{{ r.comprobante }}</small>
+                            }
+                            @case ('pendiente') {
+                              <span class="status-badge pending">
+                                Por cobrar &#36;{{ fmtMonto(r.monto) }}
+                              </span>
+                            }
+                            @default {
+                              <span class="status-badge">Sin costo</span>
+                            }
                           }
                         </td>
-                        <td><button class="table-action" (click)="cancelarReserva(r.id)">Cancelar</button></td>
+
+                        <td>
+                          <button class="table-action" (click)="cancelarReserva(r.id)">Cancelar</button>
+                        </td>
                       </tr>
                     } @empty {
-                      <tr><td colspan="6" class="table-empty-state">No hay reservas próximas.</td></tr>
+                      <tr>
+                        <td colspan="6" class="table-empty-state">No hay reservas próximas.</td>
+                      </tr>
                     }
                   </tbody>
                 </table>
@@ -662,16 +1115,26 @@
                 <p>Publicaciones de todos los residentes.</p>
               </div>
             </div>
+
             <div class="community-admin-grid">
               <article class="panel">
-                <div class="panel-header"><div><span class="eyebrow">PUBLICACIONES</span><h2>Actividad reciente</h2></div></div>
+                <div class="panel-header">
+                  <div><span class="eyebrow">PUBLICACIONES</span><h2>Actividad reciente</h2></div>
+                </div>
+
                 @for (p of posts().slice(0, 15); track p.id) {
                   <div class="admin-post">
                     <div class="post-admin-avatar">{{ iniciales(p.author) }}</div>
+
                     <div class="post-admin-content">
-                      <div><strong>{{ p.author }}</strong><span>{{ tiempoRelativo(p.createdAt?.seconds) }}</span></div>
+                      <div>
+                        <strong>{{ p.author }}</strong>
+                        <span>{{ tiempoRelativo(p.createdAt?.seconds) }}</span>
+                      </div>
+
                       <h3>{{ p.title }}</h3>
                       <p>{{ p.body }}</p>
+
                       <div class="post-admin-actions">
                         <button (click)="eliminarPost(p.id, 'publicación')">Eliminar</button>
                       </div>
@@ -683,10 +1146,24 @@
               </article>
 
               <article class="panel community-summary">
-                <div class="panel-header"><div><span class="eyebrow">RESUMEN</span><h2>Actividad</h2></div></div>
-                <div class="community-stat"><strong>{{ posts().length }}</strong><span>Publicaciones totales</span></div>
-                <div class="community-stat"><strong>{{ totalComentarios() }}</strong><span>Comentarios</span></div>
-                <div class="community-stat"><strong>{{ residentes().length }}</strong><span>Residentes alcanzados</span></div>
+                <div class="panel-header">
+                  <div><span class="eyebrow">RESUMEN</span><h2>Actividad</h2></div>
+                </div>
+
+                <div class="community-stat">
+                  <strong>{{ posts().length }}</strong>
+                  <span>Publicaciones totales</span>
+                </div>
+
+                <div class="community-stat">
+                  <strong>{{ totalComentarios() }}</strong>
+                  <span>Comentarios</span>
+                </div>
+
+                <div class="community-stat">
+                  <strong>{{ residentes().length }}</strong>
+                  <span>Residentes alcanzados</span>
+                </div>
               </article>
             </div>
           </section>
@@ -704,23 +1181,38 @@
             </div>
 
             <div class="panel new-post-panel">
-              <div class="panel-header"><div><span class="eyebrow">NUEVO</span><h2>Crear aviso</h2></div></div>
+              <div class="panel-header">
+                <div><span class="eyebrow">NUEVO</span><h2>Crear aviso</h2></div>
+              </div>
+
               <input #titulo type="text" placeholder="Título del aviso">
               <textarea #cuerpo placeholder="Escribe el contenido del aviso..."></textarea>
-              <button class="primary-button" (click)="publicarAviso(titulo.value, cuerpo.value, titulo, cuerpo)">Publicar aviso</button>
+
+              <button
+                class="primary-button"
+                (click)="publicarAviso(titulo.value, cuerpo.value, titulo, cuerpo)"
+              >
+                Publicar aviso
+              </button>
             </div>
 
             <div class="notice-admin-list">
               @for (p of avisos(); track p.id) {
                 <article class="panel notice-admin-card">
                   <div class="notice-icon large">!</div>
+
                   <div class="notice-admin-content">
                     <div class="notice-admin-header">
-                      <div><span class="eyebrow">ADMINISTRACIÓN</span><h2>{{ p.title }}</h2></div>
+                      <div>
+                        <span class="eyebrow">ADMINISTRACIÓN</span>
+                        <h2>{{ p.title }}</h2>
+                      </div>
                       <span class="status-badge confirmed">Publicado</span>
                     </div>
+
                     <p>{{ p.body }}</p>
                     <small>{{ fmtTimestamp(p.createdAt) }}</small>
+
                     <div class="post-admin-actions" style="margin-top:10px;">
                       <button (click)="eliminarPost(p.id, 'aviso')">Eliminar</button>
                     </div>
@@ -739,8 +1231,29 @@
             <div class="page-header">
               <div>
                 <span class="eyebrow">ANÁLISIS</span>
-                <h1>Reportes</h1>
-                <p>Indicadores del condominio y exportación de datos.</p>
+                <h1>Reportes financieros</h1>
+                <p>Consulta períodos anteriores, revisa indicadores y genera informes financieros.</p>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
+                  Período
+                  <input
+                    type="month"
+                    aria-label="Seleccionar período del reporte"
+                    [value]="periodoSeleccionado()"
+                    (change)="cambiarPeriodo($any($event.target).value)"
+                    style="padding:9px;border:1px solid #d1d5db;border-radius:8px;background:white;"
+                  >
+                </label>
+
+                <button
+                  class="primary-button"
+                  type="button"
+                  (click)="generarReporteFinanciero()"
+                >
+                  Generar reporte financiero
+                </button>
               </div>
             </div>
 
@@ -748,49 +1261,88 @@
               <article class="panel report-card">
                 <span class="eyebrow">GASTOS COMUNES COBRADOS</span>
                 <strong>{{ porcentaje() }}%</strong>
-                <p>&#36;{{ fmtMonto(totalRecaudado()) }} recaudados en {{ mes }}.</p>
-                <div class="report-bar"><span [style.width.%]="porcentaje() > 100 ? 100 : porcentaje()"></span></div>
+                <p>&#36;{{ fmtMonto(totalRecaudado()) }} aplicados a cuotas de {{ etiquetaPeriodo() }}.</p>
+                <div class="report-bar">
+                  <span [style.width.%]="porcentaje() > 100 ? 100 : porcentaje()"></span>
+                </div>
               </article>
+
               <article class="panel report-card">
                 <span class="eyebrow">MOROSIDAD</span>
                 <strong>{{ morosidad() }}%</strong>
-                <p>{{ pendientes() }} de {{ residentes().length }} residentes sin pagar este mes.</p>
-                <div class="report-bar"><span [style.width.%]="morosidad()"></span></div>
+                <p>{{ pendientes() }} de {{ residentes().length }} residentes con cuota incompleta en {{ etiquetaPeriodo() }}.</p>
+                <div class="report-bar">
+                  <span [style.width.%]="morosidad()"></span>
+                </div>
               </article>
+
               <article class="panel report-card">
-                <span class="eyebrow">MULTAS</span>
-                <strong>{{ multasPendientes().length }}</strong>
-                <p>Multas pendientes por &#36;{{ fmtMonto(totalMultasPendientes()) }}.</p>
+                <span class="eyebrow">MULTAS PENDIENTES DEL PERÍODO</span>
+                <strong>{{ multasPendientesPeriodo().length }}</strong>
+                <p>Multas pendientes por &#36;{{ fmtMonto(totalMultasPendientesPeriodo()) }}.</p>
               </article>
+
               <article class="panel report-card">
-                <span class="eyebrow">BALANCE DEL MES</span>
+                <span class="eyebrow">BALANCE DEL PERÍODO</span>
                 <strong>{{ finMes().balance < 0 ? '-' : '' }}&#36;{{ fmtMonto(finMes().balance < 0 ? -finMes().balance : finMes().balance) }}</strong>
                 <p>Ingresos &#36;{{ fmtMonto(finMes().ingresos) }} menos egresos &#36;{{ fmtMonto(finMes().egresos) }}.</p>
+              </article>
+
+              <article class="panel report-card">
+                <span class="eyebrow">PAGOS PARCIALES</span>
+                <strong>{{ pagosParciales() }}</strong>
+                <p>Residentes que registran abonos inferiores a la cuota completa.</p>
               </article>
             </div>
 
             <div class="dashboard-bottom-grid" style="margin-bottom:20px;">
               <article class="panel">
-                <div class="panel-header"><div><span class="eyebrow">ÚLTIMOS 6 MESES</span><h2>Ingresos vs egresos</h2></div></div>
+                <div class="panel-header">
+                  <div>
+                    <span class="eyebrow">ÚLTIMOS 6 MESES DEL HISTORIAL</span>
+                    <h2>Ingresos vs egresos</h2>
+                  </div>
+                </div>
+
                 @for (f of serieFinanzas(); track f.clave) {
                   <div class="rep-mes">
                     <span class="barra-mes">{{ f.etiqueta }}</span>
+
                     <div class="rep-barras">
-                      <div class="report-bar barra-fina"><span [style.width.%]="f.pi"></span></div>
-                      <div class="report-bar barra-fina"><span class="barra-roja" [style.width.%]="f.pe"></span></div>
+                      <div class="report-bar barra-fina">
+                        <span [style.width.%]="f.pi"></span>
+                      </div>
+                      <div class="report-bar barra-fina">
+                        <span class="barra-roja" [style.width.%]="f.pe"></span>
+                      </div>
                     </div>
-                    <div class="rep-valores"><b class="v-ing">&#36;{{ fmtMonto(f.ingresos) }}</b><b class="v-egr">&#36;{{ fmtMonto(f.egresos) }}</b></div>
+
+                    <div class="rep-valores">
+                      <b class="v-ing">&#36;{{ fmtMonto(f.ingresos) }}</b>
+                      <b class="v-egr">&#36;{{ fmtMonto(f.egresos) }}</b>
+                    </div>
                   </div>
                 }
               </article>
 
               <article class="panel">
-                <div class="panel-header"><div><span class="eyebrow">COBRANZA</span><h2>Residentes sin pagar ({{ mes }})</h2></div></div>
+                <div class="panel-header">
+                  <div>
+                    <span class="eyebrow">COBRANZA</span>
+                    <h2>Residentes con saldo pendiente ({{ etiquetaPeriodo() }})</h2>
+                  </div>
+                </div>
+
                 @for (u of morosos().slice(0, 8); track u.uid) {
                   <div class="notif-item sin-borde">
                     <div class="table-avatar">{{ iniciales(u.nombre) }}</div>
-                    <div class="notif-texto"><strong>{{ u.nombre || 'Sin nombre' }}</strong><span>{{ u.torre ? 'Torre ' + u.torre + ' · ' : '' }}{{ u.depto || '—' }}</span></div>
-                    <span class="pending-text">&#36;{{ fmtMonto(valorTotal()) }}</span>
+
+                    <div class="notif-texto">
+                      <strong>{{ u.nombre || 'Sin nombre' }}</strong>
+                      <span>{{ u.torre ? 'Torre ' + u.torre + ' · ' : '' }}{{ u.depto || '—' }}</span>
+                    </div>
+
+                    <span class="pending-text">&#36;{{ fmtMonto(montoPendienteResidente(u.uid)) }}</span>
                   </div>
                 } @empty {
                   <div class="table-empty-state">Todos los residentes están al día.</div>
@@ -798,15 +1350,95 @@
               </article>
             </div>
 
+            <div class="dashboard-bottom-grid" style="margin-bottom:20px;">
+              <article class="panel">
+                <div class="panel-header">
+                  <div>
+                    <span class="eyebrow">INGRESOS RECIBIDOS</span>
+                    <h2>Desglose de {{ etiquetaPeriodo() }}</h2>
+                  </div>
+                </div>
+
+                <div class="rec-detalle">
+                  <div>
+                    <span>Gastos comunes</span>
+                    <b>&#36;{{ fmtMonto(recaudacionMes().gastos) }}</b>
+                  </div>
+
+                  <div>
+                    <span>Fondo de reserva</span>
+                    <b>&#36;{{ fmtMonto(recaudacionMes().fondoReserva) }}</b>
+                  </div>
+
+                  <div>
+                    <span>Multas cobradas</span>
+                    <b>&#36;{{ fmtMonto(recaudacionMes().multas) }}</b>
+                  </div>
+
+                  <div>
+                    <span>Reservas cobradas</span>
+                    <b>&#36;{{ fmtMonto(recaudacionMes().reservas) }}</b>
+                  </div>
+
+                  <div class="rec-total">
+                    <span>Total de ingresos</span>
+                    <b>&#36;{{ fmtMonto(recaudacionMes().total) }}</b>
+                  </div>
+                </div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-header">
+                  <div>
+                    <span class="eyebrow">RESUMEN</span>
+                    <h2>Estado de cuotas de {{ etiquetaPeriodo() }}</h2>
+                  </div>
+                </div>
+
+                <div class="payment-mini-grid">
+                  <div>
+                    <span>Cuotas completas</span>
+                    <strong>{{ pagadosResidentes() }}</strong>
+                  </div>
+                  <div>
+                    <span>Parciales</span>
+                    <strong>{{ pagosParciales() }}</strong>
+                  </div>
+                  <div>
+                    <span>Pendientes</span>
+                    <strong>{{ pendientes() }}</strong>
+                  </div>
+                </div>
+
+                <div class="payment-total">
+                  <span>Total esperado</span>
+                  <strong>&#36;{{ fmtMonto(montoEsperado()) }}</strong>
+                </div>
+
+                <div class="payment-total">
+                  <span>Saldo pendiente de cuotas</span>
+                  <strong>&#36;{{ fmtMonto(montoPendiente()) }}</strong>
+                </div>
+              </article>
+            </div>
+
             <div class="dashboard-bottom-grid">
               <article class="panel">
-                <div class="panel-header"><div><span class="eyebrow">ESPACIOS</span><h2>Reservas próximas por espacio</h2></div></div>
+                <div class="panel-header">
+                  <div><span class="eyebrow">ESPACIOS</span><h2>Reservas próximas por espacio</h2></div>
+                </div>
+
                 <div class="table-wrapper">
                   <table>
-                    <thead><tr><th>Espacio</th><th>Reservas próximas</th></tr></thead>
+                    <thead>
+                      <tr><th>Espacio</th><th>Reservas próximas</th></tr>
+                    </thead>
                     <tbody>
                       @for (e of reservasPorEspacio(); track e.espacio) {
-                        <tr><td>{{ e.espacio }}</td><td>{{ e.total }}</td></tr>
+                        <tr>
+                          <td>{{ e.espacio }}</td>
+                          <td>{{ e.total }}</td>
+                        </tr>
                       }
                     </tbody>
                   </table>
@@ -814,7 +1446,10 @@
               </article>
 
               <article class="panel">
-                <div class="panel-header"><div><span class="eyebrow">EXPORTAR</span><h2>Descargar datos (CSV)</h2></div></div>
+                <div class="panel-header">
+                  <div><span class="eyebrow">EXPORTAR</span><h2>Descargar datos (CSV)</h2></div>
+                </div>
+
                 <div class="acciones-reporte">
                   <button class="primary-button" (click)="exportarResidentes()">Residentes</button>
                   <button class="primary-button" (click)="exportarPagos()">Pagos</button>
@@ -830,13 +1465,24 @@
         @case ('configuracion') {
           <section class="panel new-post-panel">
             <h2>Cuenta bancaria para transferencias</h2>
+
             @for (campo of camposBanco; track campo) {
               <label [attr.for]="'transferencia-' + campo">{{ campo }}</label>
-              <input #dato [id]="'transferencia-' + campo" type="text" maxlength="120"
-                [value]="datosBanco()[campo]" (input)="editarBanco(campo, dato.value)">
+              <input
+                #dato
+                [id]="'transferencia-' + campo"
+                type="text"
+                maxlength="120"
+                [value]="datosBanco()[campo]"
+                (input)="editarBanco(campo, dato.value)"
+              >
             }
-            <button class="primary-button" type="button" (click)="guardarBanco()">Guardar cuenta bancaria</button>
+
+            <button class="primary-button" type="button" (click)="guardarBanco()">
+              Guardar cuenta bancaria
+            </button>
           </section>
+
           <section class="screen active">
             <div class="page-header">
               <div>
@@ -848,35 +1494,70 @@
 
             <div class="dashboard-bottom-grid">
               <article class="panel new-post-panel">
-                <div class="panel-header"><div><span class="eyebrow">COBRO MENSUAL</span><h2>Gasto común</h2></div></div>
+                <div class="panel-header">
+                  <div><span class="eyebrow">COBRO MENSUAL</span><h2>Gasto común</h2></div>
+                </div>
 
                 <label class="cfg-label">Gastos comunes (CLP)</label>
-                <input type="number" min="1" [value]="cfgGasto()" (input)="cfgGasto.set($any($event.target).value)">
+                <input
+                  type="number"
+                  min="1"
+                  [value]="cfgGasto()"
+                  (input)="cfgGasto.set($any($event.target).value)"
+                >
 
                 <label class="cfg-label">Fondo de reserva (CLP)</label>
-                <input type="number" min="0" [value]="cfgFondo()" (input)="cfgFondo.set($any($event.target).value)">
+                <input
+                  type="number"
+                  min="0"
+                  [value]="cfgFondo()"
+                  (input)="cfgFondo.set($any($event.target).value)"
+                >
 
-                <p class="cfg-total">Total mensual por residente: <b>&#36;{{ fmtMonto(valorTotal()) }}</b></p>
+                <p class="cfg-total">
+                  Total mensual por residente:
+                  <b>&#36;{{ fmtMonto(valorTotal()) }}</b>
+                </p>
+
                 <button class="primary-button" (click)="guardarConfig()">Guardar valores</button>
-                <p class="cfg-nota">El nuevo valor se usa en el panel y en la app de los residentes al próximo ingreso.</p>
+
+                <p class="cfg-nota">
+                  El nuevo valor se usa en el panel y en la app de los residentes al próximo ingreso.
+                </p>
               </article>
 
               <article class="panel new-post-panel">
-                <div class="panel-header"><div><span class="eyebrow">PERMISOS</span><h2>Administradores</h2></div></div>
+                <div class="panel-header">
+                  <div><span class="eyebrow">PERMISOS</span><h2>Administradores</h2></div>
+                </div>
 
-                <label class="cfg-label">Agregar administrador (correo de una cuenta ya registrada)</label>
-                <input type="email" placeholder="correo@ejemplo.com"
-                       [value]="nuevoAdminEmail()" (input)="nuevoAdminEmail.set($any($event.target).value)">
-                <button class="primary-button" (click)="agregarAdmin()">Dar permisos de administrador</button>
+                <label class="cfg-label">
+                  Agregar administrador (correo de una cuenta ya registrada)
+                </label>
+
+                <input
+                  type="email"
+                  placeholder="correo@ejemplo.com"
+                  [value]="nuevoAdminEmail()"
+                  (input)="nuevoAdminEmail.set($any($event.target).value)"
+                >
+
+                <button class="primary-button" (click)="agregarAdmin()">
+                  Dar permisos de administrador
+                </button>
 
                 <div class="lista-admins">
                   @for (a of admins(); track a.uid) {
                     <div class="notif-item">
                       <div class="table-avatar">{{ iniciales(a.nombre || a.correo) }}</div>
+
                       <div class="notif-texto">
-                        <strong>{{ a.nombre || 'Sin nombre' }}{{ a.uid === miUid ? ' (tú)' : '' }}</strong>
+                        <strong>
+                          {{ a.nombre || 'Sin nombre' }}{{ a.uid === miUid ? ' (tú)' : '' }}
+                        </strong>
                         <span>{{ a.correo }}</span>
                       </div>
+
                       @if (a.uid !== miUid) {
                         <button class="table-action" (click)="quitarAdmin(a.uid)">Quitar</button>
                       }

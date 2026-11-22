@@ -5,8 +5,18 @@ const MESES = [
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
 ];
 
-/** Valores de la cuenta. El admin los cambia en Configuracion (Firestore: config/general). */
-let cfg = { gastoComun: 40000, fondoReserva: 5000 };
+/**
+ * Valores predeterminados de HabitApp.
+ * Gastos comunes: $220.000
+ * Fondo de reserva: $5.000
+ * Total mensual: $225.000
+ *
+ * La configuración de Firestore puede actualizar estos valores.
+ */
+let cfg = {
+  gastoComun: 220000,
+  fondoReserva: 5000,
+};
 
 export function setConfigCuenta(c: Partial<typeof cfg>) {
   cfg = { ...cfg, ...c };
@@ -20,21 +30,33 @@ export function mesActual(d: Date = new Date()): string {
   return `${MESES[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-/** Vence el ultimo dia del mes en curso. */
+/** Vence el último día del mes en curso. */
 export function vencimientoActual(d: Date = new Date()): string {
-  const ultimo = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  const ultimo = new Date(
+    d.getFullYear(),
+    d.getMonth() + 1,
+    0
+  ).getDate();
+
   return `${ultimo} de ${MESES[d.getMonth()].toLowerCase()}`;
 }
 
 export function pendienteDelMes(d: Date = new Date()): PagoPendiente {
   const desglose = [
-    { concepto: 'Gastos comunes', monto: cfg.gastoComun },
-    { concepto: 'Fondo de reserva', monto: cfg.fondoReserva },
+    {
+      concepto: 'Gastos comunes',
+      monto: cfg.gastoComun,
+    },
+    {
+      concepto: 'Fondo de reserva',
+      monto: cfg.fondoReserva,
+    },
   ];
+
   return {
     mes: mesActual(d),
     vencimiento: vencimientoActual(d),
     desglose,
-    total: desglose.reduce((s, i) => s + i.monto, 0),
+    total: desglose.reduce((s, item) => s + item.monto, 0),
   };
 }

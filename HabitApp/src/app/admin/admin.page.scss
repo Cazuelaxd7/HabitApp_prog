@@ -1,3 +1,4 @@
+
 @use 'sass:meta';
 
 app-admin {
@@ -41,332 +42,1615 @@ app-admin {
   min-height: 100%;
 }
 
-/* Tu CSS original, anidado bajo app-admin */
+/* ===== CSS original de HabitApp ===== */
 app-admin {
   @include meta.load-css('admin.css');
+}
+
+/* ===== Normalización general ===== */
+app-admin,
+app-admin *,
+app-admin *::before,
+app-admin *::after {
+  box-sizing: border-box;
 }
 
 app-admin ion-content {
   --background: #f5f7fb;
   --color: #16181d;
-  color: #16181d;
   --padding-start: 0;
   --padding-end: 0;
   --padding-top: 0;
   --padding-bottom: 0;
+
+  color: #16181d;
 }
 
-/* ===== Layout responsive (sin cortes a la derecha) ===== */
-@media (max-width: 1200px) { app-admin { --side: 220px; } }
+app-admin button,
+app-admin input,
+app-admin select,
+app-admin textarea {
+  font: inherit;
+}
 
-app-admin .admin-layout { display: block !important; min-height: 100%; }
-app-admin .sidebar { width: var(--side) !important; z-index: 1000; }
+app-admin button {
+  cursor: pointer;
+}
+
+app-admin button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+app-admin img,
+app-admin svg {
+  max-width: 100%;
+}
+
+/* ===== Layout principal ===== */
+app-admin .admin-layout {
+  display: block !important;
+  width: 100%;
+  min-height: 100%;
+}
+
+app-admin .sidebar {
+  width: var(--side) !important;
+  z-index: 1000;
+}
+
 app-admin .main-content {
   width: auto !important;
-  margin-left: var(--side) !important;
   min-width: 0;
+  margin-left: var(--side) !important;
   overflow-x: hidden;
 }
-app-admin .main-content > * { max-width: 100%; }
-app-admin .panel, app-admin .stat-card, app-admin .fin-card { min-width: 0; }
-app-admin .backdrop { display: none; }
 
-/* ===== Textos legibles (el original usaba 8 a 10 px) ===== */
-app-admin .menu-item { font-size: 14px; }
-app-admin .stat-content span { font-size: 12px; }
-app-admin .stat-content strong { font-size: 22px; }
-app-admin .stat-content small { font-size: 11px; }
-app-admin .panel-header h2 { font-size: 16px; }
-app-admin .page-header p { font-size: 13px; }
-app-admin .payment-total span, app-admin .payment-mini-grid span { font-size: 12px; }
-app-admin .payment-mini-grid strong { font-size: 16px; }
-app-admin .progress-header span, app-admin .progress-header strong, app-admin .progress-footer span { font-size: 11px; }
-app-admin .activity-text strong, app-admin .reservation-info strong, app-admin .notice-item strong,
-app-admin .space-admin-card strong, app-admin .resident-cell strong { font-size: 13px; }
-app-admin .activity-text span, app-admin .reservation-info span, app-admin .notice-item span,
-app-admin .space-admin-card span, app-admin .space-admin-card small,
-app-admin .resident-cell span, app-admin .community-stat span { font-size: 12px; }
-app-admin .activity-item small { font-size: 11px; }
-app-admin .reservation-date span { font-size: 9px; }
-app-admin .status-badge { font-size: 11px; padding: 5px 10px; }
-app-admin .table-action { font-size: 12px; }
-app-admin .text-button { font-size: 12px; }
-app-admin thead th { font-size: 11px; }
-app-admin tbody td { font-size: 13px; }
-app-admin .post-admin-content > div:first-child strong { font-size: 13px; }
-app-admin .post-admin-content > div:first-child span { font-size: 11px; }
-app-admin .post-admin-content h3 { font-size: 14px; }
-app-admin .post-admin-content p, app-admin .notice-admin-content p { font-size: 13px; }
-app-admin .post-admin-actions button { font-size: 12px; }
-app-admin .notice-admin-content small { font-size: 11px; }
-app-admin .report-card > p { font-size: 12px; }
-app-admin .admin-profile-info strong { font-size: 13px; }
-app-admin .admin-profile-info span { font-size: 11px; }
-app-admin .topbar-search input, app-admin .table-search input { font-size: 13px; }
-app-admin .topbar-actions { gap: 10px; }
+app-admin .main-content > * {
+  max-width: 100%;
+}
+
+app-admin .screen {
+  width: 100%;
+  min-width: 0;
+}
+
+app-admin .panel,
+app-admin .stat-card,
+app-admin .fin-card,
+app-admin .report-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
+app-admin .backdrop {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  app-admin {
+    --side: 220px;
+  }
+}
+
+/* ===== Textos legibles ===== */
+app-admin .menu-item {
+  font-size: 14px;
+}
+
+app-admin .stat-content span {
+  font-size: 12px;
+}
+
+app-admin .stat-content strong {
+  font-size: 22px;
+}
+
+app-admin .stat-content small {
+  font-size: 11px;
+}
+
+app-admin .panel-header h2 {
+  font-size: 16px;
+}
+
+app-admin .page-header p {
+  font-size: 13px;
+}
+
+app-admin .payment-total span,
+app-admin .payment-mini-grid span {
+  font-size: 12px;
+}
+
+app-admin .payment-mini-grid strong {
+  font-size: 16px;
+}
+
+app-admin .progress-header span,
+app-admin .progress-header strong,
+app-admin .progress-footer span {
+  font-size: 11px;
+}
+
+app-admin .activity-text strong,
+app-admin .reservation-info strong,
+app-admin .notice-item strong,
+app-admin .space-admin-card strong,
+app-admin .resident-cell strong {
+  font-size: 13px;
+}
+
+app-admin .activity-text span,
+app-admin .reservation-info span,
+app-admin .notice-item span,
+app-admin .space-admin-card span,
+app-admin .space-admin-card small,
+app-admin .resident-cell span,
+app-admin .community-stat span {
+  font-size: 12px;
+}
+
+app-admin .activity-item small {
+  font-size: 11px;
+}
+
+app-admin .reservation-date span {
+  font-size: 9px;
+}
+
+app-admin .status-badge {
+  font-size: 11px;
+  padding: 5px 10px;
+}
+
+app-admin .table-action,
+app-admin .text-button {
+  font-size: 12px;
+}
+
+app-admin thead th {
+  font-size: 11px;
+}
+
+app-admin tbody td {
+  font-size: 13px;
+}
+
+app-admin .post-admin-content > div:first-child strong {
+  font-size: 13px;
+}
+
+app-admin .post-admin-content > div:first-child span {
+  font-size: 11px;
+}
+
+app-admin .post-admin-content h3 {
+  font-size: 14px;
+}
+
+app-admin .post-admin-content p,
+app-admin .notice-admin-content p {
+  font-size: 13px;
+}
+
+app-admin .post-admin-actions button {
+  font-size: 12px;
+}
+
+app-admin .notice-admin-content small {
+  font-size: 11px;
+}
+
+app-admin .report-card > p {
+  font-size: 12px;
+}
+
+app-admin .admin-profile-info strong {
+  font-size: 13px;
+}
+
+app-admin .admin-profile-info span {
+  font-size: 11px;
+}
+
+app-admin .topbar-search input,
+app-admin .table-search input {
+  font-size: 13px;
+}
+
+app-admin .topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===== Encabezados y grillas ===== */
+app-admin .page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+}
+
+app-admin .page-header > div {
+  min-width: 0;
+}
+
+app-admin .page-header h1 {
+  overflow-wrap: break-word;
+}
+
+app-admin .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+app-admin .panel-header > div {
+  min-width: 0;
+}
+
+app-admin .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+app-admin .dashboard-grid,
+app-admin .dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+app-admin .dashboard-grid > *,
+app-admin .dashboard-bottom-grid > * {
+  min-width: 0;
+}
+
+app-admin .community-admin-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(240px, 1fr);
+  gap: 18px;
+  width: 100%;
+}
+
+app-admin .community-admin-grid > * {
+  min-width: 0;
+}
+
+app-admin .report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 14px;
+  width: 100%;
+}
+
+app-admin .report-card {
+  min-width: 0;
+}
 
 /* ===== Campana de notificaciones ===== */
-app-admin .notif-wrap { position: relative; }
+app-admin .notif-wrap {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 80;
+}
+
 app-admin .notif-btn {
   position: relative;
-  width: 40px; height: 40px;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
   border-radius: 11px;
   background: var(--surface-soft);
   color: var(--text-secondary);
   cursor: pointer;
 }
-app-admin .notif-btn svg { width: 20px; height: 20px; }
-app-admin .notif-btn:hover { background: var(--primary-soft); color: var(--primary); }
-app-admin .notif-badge {
-  position: absolute; top: -4px; right: -4px;
-  min-width: 18px; height: 18px; padding: 0 5px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 20px;
-  background: var(--danger); color: #fff;
-  font-size: 11px; font-weight: 700;
-  border: 2px solid #fff;
+
+app-admin .notif-btn svg {
+  width: 20px;
+  height: 20px;
 }
+
+app-admin .notif-btn:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+app-admin .notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+
+  border: 2px solid #fff;
+  border-radius: 20px;
+
+  background: var(--danger);
+  color: #fff;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
 app-admin .notif-panel {
-  position: absolute; right: 0; top: 50px;
-  width: min(360px, 92vw);
-  max-height: 65vh; overflow-y: auto;
+  position: absolute;
+  top: 50px;
+  right: 0;
+
+  width: min(360px, calc(100vw - 28px));
+  max-height: 65vh;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 14px;
   box-shadow: var(--shadow-medium);
-  z-index: 70;
+
+  z-index: 120;
 }
+
 app-admin .notif-head {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
 }
-app-admin .notif-head strong { font-size: 14px; }
-app-admin .notif-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 14px;
-  border-bottom: 1px solid #f0f2f5;
-}
-app-admin .notif-item:last-child { border-bottom: 0; }
-app-admin .notif-item.sin-borde { padding-left: 0; padding-right: 0; }
-app-admin .notif-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-app-admin .notif-texto strong { font-size: 13px; }
-app-admin .notif-texto span {
-  font-size: 12px; color: var(--text-muted);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+
+app-admin .notif-head strong {
+  font-size: 14px;
 }
 
-/* ===== Aviso de registros pendientes ===== */
+app-admin .notif-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 0;
+  padding: 11px 14px;
+
+  border-bottom: 1px solid #f0f2f5;
+}
+
+app-admin .notif-item:last-child {
+  border-bottom: 0;
+}
+
+app-admin .notif-item.sin-borde {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+app-admin .notif-item .table-avatar {
+  flex: 0 0 auto;
+}
+
+app-admin .notif-texto {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 3px;
+
+  min-width: 0;
+  overflow: hidden;
+}
+
+app-admin .notif-texto strong {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+app-admin .notif-texto span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+app-admin .notif-item .table-action {
+  flex: 0 0 auto;
+  max-width: 120px;
+  white-space: nowrap;
+}
+
+/* ===== Alerta de registros pendientes ===== */
 app-admin .alerta-registro {
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  padding: 14px 18px; margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0 0 20px;
+  padding: 16px 20px;
+
   background: var(--warning-soft);
   border: 1px solid #fed7aa;
   border-radius: 14px;
 }
-app-admin .alerta-registro strong { display: block; font-size: 14px; color: #9a3412; }
-app-admin .alerta-registro span { font-size: 12px; color: #c2410c; }
+
+app-admin .alerta-registro > div {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+app-admin .alerta-registro strong {
+  display: block;
+  margin: 0;
+  padding: 0;
+
+  color: #9a3412;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+app-admin .alerta-registro span {
+  display: block;
+  margin: 0;
+  padding: 0;
+
+  color: #c2410c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+app-admin .alerta-registro > .primary-button {
+  position: static !important;
+
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+
+  width: auto !important;
+  min-width: 110px;
+  max-width: 100%;
+  min-height: 40px;
+
+  margin: 0 !important;
+  padding: 10px 20px !important;
+
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1.3;
+
+  transform: none;
+}
+
+/* ===== Tarjetas de estadísticas ===== */
+app-admin .stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: 100%;
+  min-width: 0;
+}
+
+app-admin .stat-icon {
+  flex: 0 0 auto;
+}
+
+app-admin .stat-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+app-admin .stat-content strong {
+  overflow-wrap: anywhere;
+}
 
 /* ===== Ingresos y egresos ===== */
-app-admin .fin-panel { margin-bottom: 20px; }
+app-admin .fin-panel {
+  margin-bottom: 20px;
+}
+
 app-admin .fin-resumen {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 18px;
 }
+
 app-admin .fin-card {
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  min-width: 0;
   padding: 14px;
+
   border-radius: 12px;
   background: var(--surface-soft);
   border: 1px solid var(--border);
 }
-app-admin .fin-card span { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
-app-admin .fin-card strong { font-size: 20px; letter-spacing: -0.4px; word-break: break-word; }
-app-admin .fin-card small { font-size: 11px; color: var(--text-muted); }
-app-admin .fin-card.ing { background: var(--success-soft); border-color: #bbf7d0; }
-app-admin .fin-card.ing strong { color: var(--success); }
-app-admin .fin-card.egr { background: var(--danger-soft); border-color: #fecaca; }
-app-admin .fin-card.egr strong { color: var(--danger); }
-app-admin .fin-card.bal { background: var(--primary-soft); border-color: #bfdbfe; }
-app-admin .fin-card.bal strong { color: var(--primary); }
-app-admin .fin-card.caja strong { color: var(--text); }
-app-admin .fin-card.neg strong { color: var(--danger); }
 
-app-admin .fin-leyenda { display: flex; gap: 16px; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); }
-app-admin .fin-leyenda .pt {
-  display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px;
+app-admin .fin-card span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
 }
-app-admin .pt.ing, app-admin .fin-bar.ing { background: var(--success); }
-app-admin .pt.egr, app-admin .fin-bar.egr { background: var(--danger); }
+
+app-admin .fin-card strong {
+  font-size: 20px;
+  letter-spacing: -0.4px;
+  overflow-wrap: anywhere;
+}
+
+app-admin .fin-card small {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+app-admin .fin-card.ing {
+  background: var(--success-soft);
+  border-color: #bbf7d0;
+}
+
+app-admin .fin-card.ing strong {
+  color: var(--success);
+}
+
+app-admin .fin-card.egr {
+  background: var(--danger-soft);
+  border-color: #fecaca;
+}
+
+app-admin .fin-card.egr strong {
+  color: var(--danger);
+}
+
+app-admin .fin-card.bal {
+  background: var(--primary-soft);
+  border-color: #bfdbfe;
+}
+
+app-admin .fin-card.bal strong {
+  color: var(--primary);
+}
+
+app-admin .fin-card.caja strong {
+  color: var(--text);
+}
+
+app-admin .fin-card.neg strong {
+  color: var(--danger);
+}
+
+app-admin .fin-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  margin-bottom: 8px;
+
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+app-admin .fin-leyenda .pt {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 3px;
+}
+
+app-admin .pt.ing,
+app-admin .fin-bar.ing {
+  background: var(--success);
+}
+
+app-admin .pt.egr,
+app-admin .fin-bar.egr {
+  background: var(--danger);
+}
 
 app-admin .fin-chart {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 8px;
   align-items: end;
+
+  width: 100%;
+  min-width: 0;
 }
-app-admin .fin-col { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+
+app-admin .fin-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  min-width: 0;
+}
+
 app-admin .fin-bars {
-  width: 100%; height: 150px;
-  display: flex; align-items: flex-end; justify-content: center; gap: 4px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+
+  width: 100%;
+  height: 150px;
+
   border-bottom: 1px solid var(--border);
 }
-app-admin .fin-bar { width: 38%; max-width: 26px; border-radius: 6px 6px 0 0; min-height: 0; transition: height 0.3s; }
-app-admin .fin-col small { font-size: 12px; color: var(--text-secondary); }
+
+app-admin .fin-bar {
+  width: 38%;
+  max-width: 26px;
+  min-height: 0;
+
+  border-radius: 6px 6px 0 0;
+  transition: height 0.3s;
+}
+
+app-admin .fin-col small {
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ===== Detalle de recaudación ===== */
+app-admin .rec-detalle {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+app-admin .rec-detalle > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 5px 0;
+  font-size: 13px;
+}
+
+app-admin .rec-detalle span {
+  color: var(--text-secondary);
+}
+
+app-admin .rec-detalle b {
+  flex-shrink: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+
+app-admin .rec-titulo {
+  color: var(--text-muted);
+  font-size: 12px !important;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+app-admin .rec-total {
+  margin-top: 4px;
+  padding-top: 8px !important;
+  border-top: 1px dashed var(--border);
+}
+
+app-admin .rec-total b {
+  color: var(--success);
+  font-size: 15px;
+}
+
+app-admin .rec-pend b {
+  color: var(--warning);
+}
+
+/* ===== Cobranza ===== */
+app-admin .payment-total {
+  min-width: 0;
+}
+
+app-admin .payment-total strong {
+  overflow-wrap: anywhere;
+}
+
+app-admin .payment-progress {
+  min-width: 0;
+}
+
+app-admin .progress-bar {
+  overflow: hidden;
+}
+
+app-admin .progress-fill {
+  max-width: 100%;
+}
+
+app-admin .payment-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+app-admin .payment-mini-grid > div {
+  min-width: 0;
+}
+
+app-admin .payment-mini-grid strong {
+  overflow-wrap: anywhere;
+}
+
+/* ===== Actividad reciente ===== */
+app-admin .activity-list,
+app-admin .reservation-list,
+app-admin .notice-list {
+  width: 100%;
+  min-width: 0;
+}
+
+app-admin .activity-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+app-admin .activity-avatar {
+  flex: 0 0 auto;
+}
+
+app-admin .activity-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+app-admin .activity-text strong,
+app-admin .activity-text span {
+  overflow-wrap: anywhere;
+}
+
+app-admin .activity-item small {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* ===== Reservas del dashboard ===== */
+app-admin .admin-reservation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+app-admin .reservation-date,
+app-admin .reservation-info {
+  flex: 0 0 auto;
+}
+
+app-admin .reservation-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+app-admin .reservation-info strong,
+app-admin .reservation-info span {
+  overflow-wrap: anywhere;
+}
+
+app-admin .admin-reservation .status-badge {
+  flex: 0 0 auto;
+}
 
 /* ===== Reportes ===== */
-app-admin .report-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important; }
 app-admin .barra-fila {
-  display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: 10px;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
   padding: 8px 0;
 }
-app-admin .barra-fila .barra-mes { font-size: 12px; color: var(--text-secondary); }
-app-admin .barra-fila b { font-size: 12px; }
-app-admin .barra-fina { margin-top: 0; height: 8px; }
-app-admin .barra-roja { background: var(--danger) !important; }
-app-admin .rep-mes {
-  display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px;
-  padding: 8px 0; border-bottom: 1px solid #f0f2f5;
+
+app-admin .barra-fila .barra-mes {
+  color: var(--text-secondary);
+  font-size: 12px;
 }
-app-admin .rep-mes:last-child { border-bottom: 0; }
-app-admin .rep-barras { display: flex; flex-direction: column; gap: 4px; }
-app-admin .rep-valores { display: flex; flex-direction: column; text-align: right; gap: 2px; }
-app-admin .rep-valores b { font-size: 12px; }
-app-admin .v-ing { color: var(--success); }
-app-admin .v-egr { color: var(--danger); }
-app-admin .acciones-reporte { display: flex; flex-direction: column; gap: 10px; }
+
+app-admin .barra-fila b {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+app-admin .barra-fina {
+  height: 8px;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+app-admin .barra-roja {
+  background: var(--danger) !important;
+}
+
+app-admin .rep-mes {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+app-admin .rep-mes:last-child {
+  border-bottom: 0;
+}
+
+app-admin .rep-barras {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+app-admin .rep-valores {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: right;
+}
+
+app-admin .rep-valores b {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+app-admin .v-ing {
+  color: var(--success);
+}
+
+app-admin .v-egr {
+  color: var(--danger);
+}
+
+app-admin .acciones-reporte {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+app-admin .report-bar {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ===== Tablas ===== */
+app-admin .table-wrapper {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+app-admin table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+app-admin th,
+app-admin td {
+  vertical-align: middle;
+}
+
+app-admin td {
+  overflow-wrap: break-word;
+}
+
+app-admin .resident-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+app-admin .resident-cell > div:last-child {
+  min-width: 0;
+}
+
+app-admin .resident-cell strong,
+app-admin .resident-cell span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+app-admin .table-avatar {
+  flex: 0 0 auto;
+}
+
+app-admin .table-empty-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted);
+}
+
+app-admin .acciones-multa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+app-admin .table-action {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
 
 /* ===== Formularios ===== */
-app-admin .multa-select {
-  width: 100%; padding: 10px 12px; margin-bottom: 10px;
-  border: 1px solid var(--border); border-radius: var(--radius-small);
-  background: #fff; color: var(--text); font-family: inherit; font-size: 13px;
+app-admin .new-post-panel {
+  min-width: 0;
 }
+
+app-admin .new-post-panel input:not([type='checkbox']),
+app-admin .new-post-panel textarea,
+app-admin .new-post-panel select {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 app-admin .new-post-panel input[type='date'],
-app-admin .new-post-panel input[type='number'] { background: #fff; color: var(--text); }
+app-admin .new-post-panel input[type='number'] {
+  background: #fff;
+  color: var(--text);
+}
+
 app-admin .new-post-panel input[type='email'] {
-  width: 100%; padding: 10px 12px; margin-bottom: 10px;
-  border: 1px solid var(--border); border-radius: var(--radius-small);
-  font-family: inherit; font-size: 13px;
-}
-app-admin .acciones-multa { display: flex; gap: 6px; flex-wrap: wrap; }
-app-admin .cfg-label { display: block; margin: 4px 0 6px; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
-app-admin .cfg-total { margin: 4px 0 14px; font-size: 14px; color: var(--text-secondary); }
-app-admin .cfg-nota { margin: 12px 0 0; font-size: 12px; color: var(--text-muted); }
-app-admin .lista-admins { margin-top: 18px; border-top: 1px solid var(--border); }
-app-admin .lista-admins .notif-item { padding-left: 0; padding-right: 0; }
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 10px;
 
-/* ===== Tablet ===== */
-@media (max-width: 1100px) {
-  app-admin .fin-resumen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+
+  font-family: inherit;
+  font-size: 13px;
 }
 
-/* ===== Celular y tablet chica: menu deslizable ===== */
-@media (max-width: 900px) {
-  app-admin .backdrop {
-    display: block;
-    position: fixed; inset: 0; z-index: 900;
-    background: rgba(15, 23, 42, 0.45);
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s ease;
-  }
-  app-admin .backdrop.show { opacity: 1; pointer-events: auto; }
+app-admin .multa-select {
+  width: 100%;
+  max-width: 100%;
 
-  app-admin .main-content { margin-left: 0 !important; }
-  app-admin .sidebar {
-    width: 270px !important;
-    overflow-y: auto;
-    transform: translateX(-100%);
-    transition: transform 0.22s ease;
-  }
-  app-admin .sidebar.mobile-open { transform: translateX(0); }
+  padding: 10px 12px;
+  margin-bottom: 10px;
 
-  app-admin .topbar { justify-content: space-between; }
-  app-admin .topbar-search { display: none; }
-  app-admin .mobile-menu-button { margin-right: 0; cursor: pointer; }
-  app-admin .admin-profile-info { display: none; }
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+
+  background: #fff;
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 13px;
 }
 
-@media (max-width: 650px) {
-  app-admin .screen { padding: 20px 14px; }
-  app-admin .page-header h1 { font-size: 21px; }
-  app-admin .fin-resumen { grid-template-columns: 1fr 1fr; gap: 8px; }
-  app-admin .fin-card { padding: 11px; }
-  app-admin .fin-card strong { font-size: 16px; }
-  app-admin .fin-bars { height: 110px; }
-  app-admin .admin-reservation { flex-wrap: wrap; }
-  app-admin .admin-reservation .table-action { margin-left: auto; }
-  app-admin .alerta-registro { flex-direction: column; align-items: stretch; }
-  app-admin .barra-fila { grid-template-columns: 1fr auto; }
-  app-admin .barra-fila .report-bar { grid-column: 1 / -1; order: 3; }
-  app-admin .acciones-multa { flex-direction: column; }
-  app-admin table { min-width: 520px; }
-  app-admin .notice-admin-card { flex-direction: column; }
+app-admin .new-post-panel > input,
+app-admin .new-post-panel > textarea,
+app-admin .new-post-panel > select {
+  width: 100%;
 }
 
-@media (max-width: 430px) {
-  app-admin .fin-resumen { grid-template-columns: 1fr; }
+app-admin .new-post-panel > textarea {
+  min-height: 110px;
+  resize: vertical;
 }
-.habit-demo-admin { margin-bottom: 24px; padding: 20px; }
-.habit-demo-admin p { font-size: 13px; line-height: 1.5; }
-.habit-demo-admin .table-wrap { overflow-x: auto; }
-.habit-demo-admin table { width: 100%; border-collapse: collapse; }
-.habit-demo-admin td, .habit-demo-admin th { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-.habit-demo-admin small { overflow-wrap: anywhere; }
-.habit-demo-admin button { padding: 8px 12px; margin: 3px; border-radius: 8px; border: 1px solid #d4d4d8; background: #f4f4f5; color: #18181b; cursor: pointer; }
 
-.pago-codigo { display: inline-block; max-width: 165px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
-.pago-referencia { display: block; margin-top: 4px; color: #64748b; }
-.status-badge.payment-review { background: #fff7ed; color: #9a3412; }
-.status-badge.payment-rejected { background: #fef2f2; color: #b91c1c; }
+app-admin .new-post-panel > .primary-button {
+  max-width: 100%;
+}
 
+app-admin .cfg-label {
+  display: block;
+  margin: 4px 0 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+app-admin .cfg-total {
+  margin: 4px 0 14px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+app-admin .cfg-nota {
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+app-admin .lista-admins {
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+app-admin .lista-admins .notif-item {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* ===== Pagos ===== */
+app-admin .pago-codigo {
+  display: inline-block;
+  max-width: 165px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+app-admin .pago-referencia {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+}
+
+app-admin .status-badge.payment-review {
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+app-admin .status-badge.payment-rejected {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* ===== Comunidad ===== */
+app-admin .admin-post {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+app-admin .post-admin-avatar {
+  flex: 0 0 auto;
+}
+
+app-admin .post-admin-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+app-admin .post-admin-content h3,
+app-admin .post-admin-content p {
+  overflow-wrap: anywhere;
+}
+
+app-admin .post-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ===== Avisos ===== */
+app-admin .notice-admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+app-admin .notice-admin-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+
+app-admin .notice-admin-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+app-admin .notice-admin-content p {
+  overflow-wrap: anywhere;
+}
+
+app-admin .notice-admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+app-admin .notice-admin-header > div {
+  min-width: 0;
+}
+
+app-admin .notice-admin-header h2 {
+  overflow-wrap: anywhere;
+}
+
+app-admin .notice-icon {
+  flex: 0 0 auto;
+}
+
+/* ===== Perfil y barra superior ===== */
+app-admin .topbar {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+app-admin .topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+app-admin .admin-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+app-admin .admin-avatar {
+  flex: 0 0 auto;
+}
+
+app-admin .admin-profile-info {
+  min-width: 0;
+}
+
+app-admin .admin-profile-info strong,
+app-admin .admin-profile-info span {
+  display: block;
+  overflow-wrap: anywhere;
+}
 
 /* ===== Topbar sin buscador ===== */
 @media (min-width: 901px) {
-  app-admin .topbar { justify-content: flex-end; }
+  app-admin .topbar {
+    justify-content: flex-end;
+  }
 }
-
-/* ===== Detalle de recaudacion ===== */
-app-admin .rec-detalle {
-  margin-bottom: 16px; padding: 14px 16px;
-  background: var(--surface-soft);
-  border: 1px solid var(--border); border-radius: 12px;
-}
-app-admin .rec-detalle > div {
-  display: flex; justify-content: space-between; gap: 12px;
-  padding: 5px 0; font-size: 13px;
-}
-app-admin .rec-detalle span { color: var(--text-secondary); }
-app-admin .rec-titulo { font-size: 12px !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
-app-admin .rec-total { margin-top: 4px; padding-top: 8px !important; border-top: 1px dashed var(--border); }
-app-admin .rec-total b { color: var(--success); font-size: 15px; }
-app-admin .rec-pend b { color: var(--warning); }
 
 /* ===== Espacios comunes ===== */
 app-admin .esp-form {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1.4fr auto;
-  gap: 10px; margin-bottom: 16px; align-items: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
 }
-app-admin .esp-form input {
-  width: 100%; padding: 10px 12px;
-  border: 1px solid var(--border); border-radius: var(--radius-small);
-  font-family: inherit; font-size: 13px; background: #fff; color: var(--text);
-}
-app-admin .precio-input {
-  width: 120px; padding: 8px 10px;
-  border: 1px solid var(--border); border-radius: 8px;
-  font-family: inherit; font-size: 13px;
-}
-app-admin .filtro-esp { width: auto; margin: 0; min-width: 180px; }
 
-@media (max-width: 900px) {
-  app-admin .esp-form { grid-template-columns: 1fr 1fr; }
+app-admin .esp-form input {
+  width: 100%;
+  min-width: 0;
+
+  padding: 10px 12px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+
+  background: #fff;
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 13px;
 }
+
+app-admin .precio-input {
+  width: 120px;
+  max-width: 100%;
+  padding: 8px 10px;
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+app-admin .filtro-esp {
+  width: auto;
+  min-width: 180px;
+  max-width: 100%;
+  margin: 0;
+}
+
+/* ===== Componentes adicionales ===== */
+app-admin .habit-demo-admin {
+  margin-bottom: 24px;
+  padding: 20px;
+}
+
+app-admin .habit-demo-admin p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+app-admin .habit-demo-admin .table-wrap {
+  overflow-x: auto;
+}
+
+app-admin .habit-demo-admin table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+app-admin .habit-demo-admin td,
+app-admin .habit-demo-admin th {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+app-admin .habit-demo-admin small {
+  overflow-wrap: anywhere;
+}
+
+app-admin .habit-demo-admin button {
+  padding: 8px 12px;
+  margin: 3px;
+
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+
+  background: #f4f4f5;
+  color: #18181b;
+
+  cursor: pointer;
+}
+
+/* ===== Estados ===== */
+app-admin .paid-text {
+  color: var(--success);
+}
+
+app-admin .pending-text {
+  color: var(--warning);
+}
+
+/* ===== Tablet ===== */
+@media (max-width: 1100px) {
+  app-admin .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  app-admin .fin-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  app-admin .esp-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ===== Menú deslizable ===== */
+@media (max-width: 900px) {
+  app-admin .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+
+    background: rgba(15, 23, 42, 0.45);
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity 0.2s ease;
+  }
+
+  app-admin .backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  app-admin .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  app-admin .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    width: 270px !important;
+    overflow-y: auto;
+
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+  }
+
+  app-admin .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  app-admin .topbar {
+    justify-content: space-between;
+  }
+
+  app-admin .topbar-search {
+    display: none;
+  }
+
+  app-admin .mobile-menu-button {
+    margin-right: 0;
+    cursor: pointer;
+  }
+
+  app-admin .admin-profile-info {
+    display: none;
+  }
+
+  app-admin .dashboard-grid,
+  app-admin .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  app-admin .community-admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  app-admin .esp-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ===== Teléfonos ===== */
 @media (max-width: 650px) {
-  app-admin .esp-form { grid-template-columns: 1fr; }
-  app-admin .panel-header { flex-wrap: wrap; }
+  app-admin .screen {
+    width: 100%;
+    padding: 20px 14px;
+  }
+
+  app-admin .page-header {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  app-admin .page-header h1 {
+    font-size: 21px;
+  }
+
+  app-admin .page-header > div:last-child {
+    max-width: 100%;
+  }
+
+  app-admin .panel-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  app-admin .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  app-admin .stat-card {
+    gap: 9px;
+    padding: 12px;
+  }
+
+  app-admin .stat-content strong {
+    font-size: 19px;
+  }
+
+  app-admin .fin-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  app-admin .fin-card {
+    padding: 11px;
+  }
+
+  app-admin .fin-card strong {
+    font-size: 16px;
+  }
+
+  app-admin .fin-bars {
+    height: 110px;
+  }
+
+  app-admin .admin-reservation {
+    flex-wrap: wrap;
+  }
+
+  app-admin .admin-reservation .table-action {
+    margin-left: auto;
+  }
+
+  /* Alerta de residentes */
+  app-admin .alerta-registro {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  app-admin .alerta-registro > div {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  app-admin .alerta-registro > .primary-button {
+    width: 100% !important;
+    min-width: 0;
+    align-self: stretch !important;
+  }
+
+  /* Tablas desplazables */
+  app-admin .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  app-admin .table-wrapper table {
+    min-width: 560px;
+  }
+
+  app-admin .acciones-multa {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Formularios */
+  app-admin .esp-form {
+    grid-template-columns: 1fr;
+  }
+
+  app-admin .new-post-panel > .primary-button {
+    width: 100%;
+  }
+
+  app-admin .filtro-esp {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Barras y reportes */
+  app-admin .barra-fila {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  app-admin .barra-fila .report-bar {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+
+  app-admin .rep-mes {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 7px;
+  }
+
+  app-admin .rep-valores b {
+    font-size: 10px;
+  }
+
+  app-admin .notice-admin-card {
+    flex-direction: column;
+  }
+
+  app-admin .payment-mini-grid {
+    gap: 6px;
+  }
+
+  app-admin .rec-detalle {
+    padding: 12px;
+  }
+
+  app-admin .rec-detalle > div {
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  app-admin .admin-post {
+    gap: 9px;
+  }
+
+  app-admin .activity-item {
+    flex-wrap: wrap;
+  }
+
+  app-admin .activity-item small {
+    margin-left: auto;
+  }
+}
+
+/* ===== Teléfonos pequeños ===== */
+@media (max-width: 430px) {
+  app-admin .screen {
+    padding: 18px 12px;
+  }
+
+  app-admin .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  app-admin .fin-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  app-admin .payment-mini-grid {
+    grid-template-columns: 1fr;
+  }
+
+  app-admin .alerta-registro {
+    padding: 13px;
+  }
+
+  app-admin .notif-panel {
+    right: -5px;
+    width: min(340px, calc(100vw - 24px));
+  }
+
+  app-admin .rep-mes {
+    grid-template-columns: 1fr;
+  }
+
+  app-admin .rep-valores {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+
+  app-admin .rec-detalle > div {
+    align-items: flex-start;
+  }
+
+  app-admin .rec-detalle b {
+    font-size: 12px;
+  }
 }
